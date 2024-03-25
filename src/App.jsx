@@ -4,19 +4,21 @@ import Display from "./Display/Display.jsx";
 import Tastiera from "./Tastiera/Tastiera.jsx";
 import Context from "./Context.jsx";
 export default function App(){
-  const [espressione,setEspressione]=useState();
+  const [expValue, setExpValue] = useState();
   useEffect(
     ()=>{
-      setEspressione("");
+      setExpValue("");
     },
     []
   )
   return (
       <div id="App">
           <div id="calcolatrice">
-              <Context.Provider value={{
-                exp:[espressione,setEspressione]
-              }}>
+              <Context.Provider
+                  value={{
+                      expState: [expValue, setExpValue],
+                  }}
+              >
                   <Display></Display>
                   <Tastiera></Tastiera>
               </Context.Provider>
