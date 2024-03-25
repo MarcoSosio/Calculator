@@ -1,0 +1,23 @@
+@use "index.scss";
+
+#App{
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    #calcolatrice{
+        box-sizing: border-box;
+        height: 100%;
+        display: flex;
+        flex-flow: column;
+        padding: 20px;
+        width: index.calc_dim(index.$std-proporzione,12);
+        height: 90vh;
+        background-color: rgb(46, 46, 46);
+        justify-content: end;
+        @media (orientation: portrait){
+            width: 100vw;
+            height: 100vh;
+        }
+    }
+}

@@ -1,0 +1,27 @@
+#Display{
+    flex: 1;
+    //background-color: rgb(56, 56, 56);
+    //border: solid 1px rgb(173, 173, 173);
+    position: relative;
+    border-radius: 15px;
+    &::after{
+        display: block;
+        width: 100%;
+        height: 1px;
+        background-color: rgb(142, 142, 142);
+        content: "";
+        position: absolute;
+        bottom: -10px;
+    }
+    .calcoli{
+        color: rgb(213, 213, 213);
+        &#input{
+            font-size: 2rem;
+        }
+        &#output{
+            font-size: 3rem;
+            text-align: end;
+            color: white;
+        }
+    }
+}
