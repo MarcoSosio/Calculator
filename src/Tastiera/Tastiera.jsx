@@ -4,9 +4,12 @@ import tasti from "./Tasti_elenco.js"
 export default function Tastiera(){
     return (
         <div id="Tastiera">
-            {tasti.map((x) => (
-                <Bottone key={x.tasto} inputUtenteProp={x.inputUtente} valExpProp={x.valExp}>
-                    {x.tasto}
+            {tasti.map((btn) => (
+                <Bottone key={btn.tasto} 
+                    inputElementProp={btn.inputElement} calcElementProp={btn.calcElement}
+                    functProp={btn.funct}
+                >
+                    {btn.tasto}
                 </Bottone>
             ))}
         </div>

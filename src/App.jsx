@@ -4,19 +4,30 @@ import Display from "./Display/Display.jsx";
 import Tastiera from "./Tastiera/Tastiera.jsx";
 import Context from "./Context.jsx";
 export default function App(){
-  const [expValue, setExpValue] = useState();
-  useEffect(
-    ()=>{
-      setExpValue("");
+  const [inputExpValue, setInputExpValue] = useState("");
+  const [calcExpValue, setCalcExpValue] = useState("");
+  const [resultValue, setResultValue] = useState();
+  const [ansValue,setAnsValue]=useState();
+  const [rootIndexValue, setRootIndexValue]=useState(null);
+  const [openRootvalue,setOpenRootValue]=useState(false);//segnala se ci sono parentesi sotto radice aperte
+ /*  useEffect(
+    function(){
+      console.log("RootIndex "+rootIndexValue)
+      console.log("CalcExp "+calcExpValue);
     },
-    []
-  )
+    [rootIndexValue,calcExpValue]
+  ) */
   return (
       <div id="App">
           <div id="calcolatrice">
               <Context.Provider
                   value={{
-                      expState: [expValue, setExpValue],
+                      inputExpState: [inputExpValue, setInputExpValue],
+                      calcExpState: [calcExpValue, setCalcExpValue],
+                      resultState: [resultValue, setResultValue],
+                      ansState: [ansValue, setAnsValue],
+                      rootIndexState: [rootIndexValue,setRootIndexValue],
+                      openRootState: [openRootvalue,setOpenRootValue]
                   }}
               >
                   <Display></Display>

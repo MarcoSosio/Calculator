@@ -4,16 +4,18 @@ import { useContext } from "react";
 
 export default function Display(){
     const $context=useContext(Context);
-    const {expState}=$context;
-    const [expValue, setExpValue] = expState;
+    const {inputExpState, calcExpState, resultState} = $context;
+    const [inputExpValue, setInputExpValue] = inputExpState;
+    const [calcExpValue, setCalcExpValue] = calcExpState;
+    const [resultValue, setResultValue] = resultState;
 
     return (
         <div id="Display">
             <div className="calcoli" id="input">
-                {"1"+expValue}
+                {inputExpValue}
             </div>
             <div className="calcoli" id="output">
-                Result
+                {resultValue}
             </div>
         </div>
     );
