@@ -1,3 +1,4 @@
+/* eslint-disable no-inner-declarations */
 import "./Bottone.scss";
 import Context from "../Context.jsx";
 import { useContext} from "react";
@@ -23,22 +24,37 @@ export default function Bottone({ children, inputElementProp, calcElementProp, f
 
     function handler() {
         
+        /* Gestisco i tatsi che hanno funzioni spaciali tramite un apposita funzione
+        nel caso dei tasti comuni gestisco il funzionamento delle radici senza creare funzioni
+        specifiche, non essendo comunques tasti speciali*/
+
         if(functProp){
+            //Se un tasto speciale deve inserire un imput ci pensa la funzione
             functProp(parameters);
         }
         else{
             let $calcExp = calcExpValue;
-            const operatori = ['+', '-', '*', '/', '**', '%', ')']; //bastai sull'espressione da valutare e non quella in input
-            if (rootIndexValue!=null && calcElementProp=="("){ //controllo l'elemento CORRENTE
-                setOpenRootValue(openRootValue+1)
-            } 
-            else if(rootIndexValue!=null && calcElementProp==")"){
-                setOpenRootValue(openRootValue-1);
+
+            function gestisciRadici(){
+                if(rootIndexValue!=null){
+                    const operatori=['+', '-', '*', '/', '**', '%'];
+                    if(operatori.includes(calcElementProp) && openRootValue==0){
+                        $calcExp = calculateRoot(
+                            rootIndexValue,
+                            setRootIndexValue,
+                            $calcExp
+                        );
+                    }
+                    else if(calcElementProp=="("){
+                        setOpenRootValue(openRootValue + 1);
+                    }
+                    else if(calcElementProp==")"){
+                        setOpenRootValue(openRootValue - 1);
+                    }
+                }
             }
-            //se calcElementProp è "(" tale condizione è impossibile
-            else if (rootIndexValue != null && operatori.includes(calcElementProp) && !openRootValue ) {
-                $calcExp = calculateRoot(rootIndexValue,setRootIndexValue,$calcExp);
-            }
+
+            gestisciRadici();
             setInputExpValue(inputExpValue + inputElementProp);
             $calcExp += calcElementProp;
             setCalcExpValue($calcExp);

@@ -1,15 +1,13 @@
+/* eslint-disable no-unused-vars */
 import { calculateRoot } from "./Funzioni";
 /*
-const tasti=
-    [
-        "2nd","deg","?","??","???",
-        "sin","cos","tan","log","ln",
-        "pi/e","rx","px","(",")",
-        "7","8","9","AC","Del",
-        "4","5","6","x","/",
-        "1","2","3","+","-",
-        ".","0","Ans","=","Mod",
-    ];
+    //? "2nd","deg","?","??","???",
+    //? "sin","cos","tan","log","ln",
+    //* "pi/e","rx","px","(",")",
+    //* "7","8","9","AC","Del",
+    //* "4","5","6","x","/",
+    //* "1","2","3","+","-",
+    //* ".","0","Ans","=","Mod",
 */
 const simboloRadice = String.fromCharCode(0x02E3) + String.fromCharCode(0x221A)
 
@@ -18,7 +16,6 @@ function handlerEqual({resultStateParam, calcExpStateParam, ansStateParam, rootI
     const [calcExpValue, setCalcExpValue] = calcExpStateParam;
     const [ansValue, setAnsValue] = ansStateParam;
     const [rootIndexValue,setRootIndexValue] =rootIndexStateParam;
-    //console.log(calcExpValue)
     let risultato;
     let risposta="";
     let exp=calcExpValue;
@@ -122,7 +119,7 @@ const tasti = [
     { tasto: "5", inputElement: "5", calcElement: "5" },
     { tasto: "6", inputElement: "6", calcElement: "6" },
     { tasto: "x", inputElement: "x", calcElement: "*" },
-    { tasto: "/", inputElement: "/", calcElement: "/" },
+    { tasto: "/", inputElement: String.fromCharCode(247), calcElement: "/" },
 
     //riga---
 

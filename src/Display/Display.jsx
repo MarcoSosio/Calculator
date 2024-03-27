@@ -1,12 +1,12 @@
+/* eslint-disable no-unused-vars */
 import "./Display.scss"
 import Context from "../Context";
 import { useContext } from "react";
 
 export default function Display(){
     const $context=useContext(Context);
-    const {inputExpState, calcExpState, resultState} = $context;
+    const {inputExpState, resultState} = $context;
     const [inputExpValue, setInputExpValue] = inputExpState;
-    const [calcExpValue, setCalcExpValue] = calcExpState;
     const [resultValue, setResultValue] = resultState;
 
     return (

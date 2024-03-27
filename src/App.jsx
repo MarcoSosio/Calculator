@@ -1,22 +1,18 @@
-import { useEffect, useState } from "react";
+import {useState } from "react";
 import "./App.scss";
 import Display from "./Display/Display.jsx";
 import Tastiera from "./Tastiera/Tastiera.jsx";
 import Context from "./Context.jsx";
 export default function App(){
-  const [inputExpValue, setInputExpValue] = useState("");
-  const [calcExpValue, setCalcExpValue] = useState("");
+  const [inputExpValue, setInputExpValue] = useState(""); //espressione inserita
+  const [calcExpValue, setCalcExpValue] = useState(""); //espressione da valutare
   const [resultValue, setResultValue] = useState();
-  const [ansValue,setAnsValue]=useState();
-  const [rootIndexValue, setRootIndexValue]=useState(null);
-  const [openRootvalue,setOpenRootValue]=useState(0);//segnala se ci sono parentesi sotto radice aperte
- /*  useEffect(
-    function(){
-      console.log("RootIndex "+rootIndexValue)
-      console.log("CalcExp "+calcExpValue);
-    },
-    [rootIndexValue,calcExpValue]
-  ) */
+  const [ansValue,setAnsValue]=useState(); //valore ottenuto dal tasto Ans
+  const [rootIndexValue, setRootIndexValue]=useState(null); //indice di una radice
+
+  /*segnala il numero di parentesi non chiuse quando si ha una parentesi relativa a una 
+  radice quadrata aperta*/
+  const [openRootValue,setOpenRootValue]=useState(0);
   return (
       <div id="App">
           <div id="calcolatrice">
@@ -27,7 +23,7 @@ export default function App(){
                       resultState: [resultValue, setResultValue],
                       ansState: [ansValue, setAnsValue],
                       rootIndexState: [rootIndexValue,setRootIndexValue],
-                      openRootState: [openRootvalue,setOpenRootValue]
+                      openRootState: [openRootValue,setOpenRootValue]
                   }}
               >
                   <Display></Display>
