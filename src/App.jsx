@@ -9,7 +9,7 @@ export default function App(){
   const [resultValue, setResultValue] = useState();
   const [ansValue,setAnsValue]=useState();
   const [rootIndexValue, setRootIndexValue]=useState(null);
-  const [openRootvalue,setOpenRootValue]=useState(false);//segnala se ci sono parentesi sotto radice aperte
+  const [openRootvalue,setOpenRootValue]=useState(0);//segnala se ci sono parentesi sotto radice aperte
  /*  useEffect(
     function(){
       console.log("RootIndex "+rootIndexValue)

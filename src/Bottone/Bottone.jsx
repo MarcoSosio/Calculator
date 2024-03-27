@@ -30,8 +30,12 @@ export default function Bottone({ children, inputElementProp, calcElementProp, f
             let $calcExp = calcExpValue;
             const operatori = ['+', '-', '*', '/', '**', '%', ')']; //bastai sull'espressione da valutare e non quella in input
             if (rootIndexValue!=null && calcElementProp=="("){ //controllo l'elemento CORRENTE
-                setOpenRootValue(true)
-            } //se calcElementProp è "(" tale condizione è impossibile
+                setOpenRootValue(openRootValue+1)
+            } 
+            else if(rootIndexValue!=null && calcElementProp==")"){
+                setOpenRootValue(openRootValue-1);
+            }
+            //se calcElementProp è "(" tale condizione è impossibile
             else if (rootIndexValue != null && operatori.includes(calcElementProp) && !openRootValue ) {
                 $calcExp = calculateRoot(rootIndexValue,setRootIndexValue,$calcExp);
             }
