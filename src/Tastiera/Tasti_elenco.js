@@ -9,7 +9,10 @@ import { calculateRoot } from "./Funzioni";
     //* "1","2","3","+","-",
     //* ".","0","Ans","=","Mod",
 */
-const simboloRadice = String.fromCharCode(0x02E3) + String.fromCharCode(0x221A)
+
+const rootSymbol = String.fromCharCode(0x221A);
+const nthRootSymbol = String.fromCharCode(0x02E3) + rootSymbol;
+const piSymbol = String.fromCharCode(960);
 
 function handlerEqual({resultStateParam, calcExpStateParam, ansStateParam, rootIndexStateParam}){
     const [resultValue,setResultValue] = resultStateParam;
@@ -78,18 +81,33 @@ function handlerAns({inputExpStateParam, calcExpStateParam, resultStateParam, an
     }
 }
 
+//! Le radici non funzionano nel caso di radice di radice
+
+function handlerSqrt({ inputExpStateParam, calcExpStateParam, rootIndexStateParam }){
+    const [inputExpValue, setInputExpValue] = inputExpStateParam
+    const [calcExpValue, setCalcExpValue] = calcExpStateParam
+    const [rootIndexValue, setRootIndexValue] = rootIndexStateParam
+
+    setInputExpValue(inputExpValue+rootSymbol);
+    
+    setRootIndexValue(2);
+}
+
 function handlerNthRoot({inputExpStateParam, calcExpStateParam, rootIndexStateParam}){
     const [inputExpValue, setInputExpValue] = inputExpStateParam
     const [calcExpValue, setCalcExpValue] = calcExpStateParam
     const [rootIndexValue,setRootIndexValue]=rootIndexStateParam
-    setInputExpValue(inputExpValue+simboloRadice)
+    setInputExpValue(inputExpValue+nthRootSymbol)
+
+    /*Divido l'espressione a ogni operatore per determinare quale numero è l'indice di radice */
     // eslint-disable-next-line no-useless-escape
     const regExpr = /[-+*\/]/
-
     const arrayExp = calcExpValue.split(regExpr);
-    setRootIndexValue( arrayExp[arrayExp.length-1] )//prendo l'indice di radice (ultimo numero)
-    setCalcExpValue( calcExpValue.slice(0, calcExpValue.length - 1) );//tolgo l'indice di radice
-    console.warn("TODO")
+    const rootIndex = arrayExp[arrayExp.length - 1];
+    setRootIndexValue( rootIndex )//prendo l'indice di radice (ultimo numero)
+
+    /*Tolgo l'indice di radice togliendo tanti caratteri quanta la lunghezza dell'indice*/
+    setCalcExpValue( calcExpValue.slice(0, -rootIndex.length) );
 }
 
 const tasti = [
@@ -99,8 +117,14 @@ const tasti = [
     terzo elemento: espressione da valutare
     */
 
-    { tasto: String.fromCharCode(960), inputElement: String.fromCharCode(960), calcElement: String(Math.PI) },
-    { tasto: simboloRadice, inputElement: simboloRadice, calcElement: "",funct: handlerNthRoot},
+    { tasto: piSymbol, inputElement: piSymbol, calcElement: String(Math.PI) },
+    {},
+    {},
+    {},
+    {},
+
+    { tasto: rootSymbol, inputElement: rootSymbol, calcElement:"", funct:handlerSqrt},
+    { tasto: nthRootSymbol, inputElement: nthRootSymbol, calcElement: "",funct: handlerNthRoot},
     { tasto: "^", inputElement: "^", calcElement: "**" },
     { tasto: "(", inputElement: "(", calcElement: "(" },
     { tasto: ")", inputElement: ")", calcElement: ")" },
