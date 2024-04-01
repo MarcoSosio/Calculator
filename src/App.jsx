@@ -8,11 +8,12 @@ export default function App(){
   const [calcExpValue, setCalcExpValue] = useState(""); //espressione da valutare
   const [resultValue, setResultValue] = useState();
   const [ansValue,setAnsValue]=useState(); //valore ottenuto dal tasto Ans
-  const [rootIndexValue, setRootIndexValue]=useState(null); //indice di una radice
+  const [rootIndexValue, setRootIndexValue]=useState([]); //indice di una radice
+  const [rootNumberValue, setRootNumberValue]=useState(0);
 
   /*segnala il numero di parentesi non chiuse quando si ha una parentesi relativa a una 
   radice quadrata aperta*/
-  const [openRootValue,setOpenRootValue]=useState(0);
+  const [openRootValue,setOpenRootValue]=useState([]);
   return (
       <div id="App">
           <div id="calcolatrice">
@@ -23,6 +24,7 @@ export default function App(){
                       resultState: [resultValue, setResultValue],
                       ansState: [ansValue, setAnsValue],
                       rootIndexState: [rootIndexValue,setRootIndexValue],
+                      rootNumberState: [rootNumberValue, setRootNumberValue],
                       openRootState: [openRootValue,setOpenRootValue]
                   }}
               >

@@ -14,7 +14,7 @@ const rootSymbol = String.fromCharCode(0x221A);
 const nthRootSymbol = String.fromCharCode(0x02E3) + rootSymbol;
 const piSymbol = String.fromCharCode(960);
 
-function handlerEqual({resultStateParam, calcExpStateParam, ansStateParam, rootIndexStateParam}){
+function handlerEqual({resultStateParam, calcExpStateParam, ansStateParam, rootIndexStateParam, openRootStateParam}){
     const [resultValue,setResultValue] = resultStateParam;
     const [calcExpValue, setCalcExpValue] = calcExpStateParam;
     const [ansValue, setAnsValue] = ansStateParam;
@@ -23,8 +23,8 @@ function handlerEqual({resultStateParam, calcExpStateParam, ansStateParam, rootI
     let risposta="";
     let exp=calcExpValue;
 
-    if (rootIndexValue!=null){
-        exp=calculateRoot(rootIndexValue,setRootIndexValue,exp);
+    if (rootIndexValue.length!=0){
+        exp = calculateRoot(rootIndexStateParam, openRootStateParam ,exp);
         console.log(exp)
     }
 
@@ -83,14 +83,19 @@ function handlerAns({inputExpStateParam, calcExpStateParam, resultStateParam, an
 
 //! Le radici non funzionano nel caso di radice di radice
 
-function handlerSqrt({ inputExpStateParam, calcExpStateParam, rootIndexStateParam }){
+function handlerSqrt({ inputExpStateParam, calcExpStateParam, rootIndexStateParam, openRootStateParam}){
     const [inputExpValue, setInputExpValue] = inputExpStateParam
     const [calcExpValue, setCalcExpValue] = calcExpStateParam
     const [rootIndexValue, setRootIndexValue] = rootIndexStateParam
+    const [openRootValue, setOpenRootValue] = openRootStateParam
+    //const [rootNumberValue, setRootNumberValue] =rootNumberStateParam
+
+    //setRootNumberValue(rootNumberValue+1);
+    setOpenRootValue([...openRootValue,0])
 
     setInputExpValue(inputExpValue+rootSymbol);
     
-    setRootIndexValue(2);
+    setRootIndexValue([...rootIndexValue,2]);
 }
 
 function handlerNthRoot({inputExpStateParam, calcExpStateParam, rootIndexStateParam}){
