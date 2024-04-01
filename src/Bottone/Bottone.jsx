@@ -50,12 +50,17 @@ export default function Bottone({ children, inputElementProp, calcElementProp, f
 
             function gestisciRadici(){
 
-                function newOpenRootValue(x){
+                function newOpenRootValue(x,pos){
+                    /*
+                    x - valore da sommare o sottrarre (+|- 1)
+                    pos - numero di posizioni da indietreggiare rispetto all'ultima (che ha valore di pos=0)
+                    */
                     let newValue=openRootValue;
-                    newValue[newValue.length-1]+=x
+                    newValue[newValue.length-1-pos]+=x
                     return newValue
                 }
-                if (rootIndexValue.length!= 0) {
+
+                if (rootIndexValue.length != 0) {
                     const operatori = ['+', '-', '*', '/', '**', '%'];
                     if (
                         operatori.includes(calcElementProp) &&
@@ -68,30 +73,33 @@ export default function Bottone({ children, inputElementProp, calcElementProp, f
                         );
                     } else if (calcElementProp == '(') {
                         setOpenRootValue(
-                            newOpenRootValue(+1)
+                            newOpenRootValue(+1,0)
                         );
                     } else if (calcElementProp == ')') {
-                        function fun(x){
-                            if(openRootValue[openRootValue.length-1]==0){//intanto che non aggiorno lo stato
-                                $calcExp = calculateRoot(
-                                    rootIndexState,
-                                    openRootState,
-                                    $calcExp
-                                );
-                                
-                                let newValue = openRootValue;
-                                newValue[newValue.length - 2] += x;
-                                console.log(newValue)
-                                return newValue;
-                            }
-                            else{
-                                return newOpenRootValue(x)
-                            }
+                        let $openRootValue;
+                        if (openRootValue[openRootValue.length - 1] == 0) {
+                            /*
+                            ! Quando valutiamo questa condizione non abbiamo ancora aggiornato l'espressione
+                            Questo blocco di codice permette di gestire cari in cui 
+                            chiudo le parentesi subito dopo aver inserito il radicando senza 
+                            mettere davanti un operatore. In questo caso dovrò calcolare la radice.
+                            Un esempio potrebbe essere il seguente:
+                            √(√4)
+                            in questo caso avremmo openRootValue =  [1,0] 
+                            in questo caso la parentesi di chiusura chiude la parentesi
+                            relativa alla prima radice e non all'ultima, quindi avremo che
+                            openRootValue = [0,0] piuttosto che [1,-1]
+                            */
+                            $calcExp = calculateRoot(
+                                rootIndexState,
+                                openRootState,
+                                $calcExp
+                            );
+                            $openRootValue = newOpenRootValue(-1, 1);
+                        } else {
+                            $openRootValue = newOpenRootValue(-1, 0);
                         }
-                        setOpenRootValue(
-                            fun(-1)
-                            //newOpenRootValue(-1)
-                        );
+                        setOpenRootValue( $openRootValue );
                     }
                 }
             }
