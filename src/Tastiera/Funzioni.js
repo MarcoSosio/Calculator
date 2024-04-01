@@ -65,12 +65,14 @@ export function calculateRoot(rootIndexStateParam,openRootStateParam,calcExpPara
     const index = rootIndexValue[rootIndexValue.length-1]
     setRootIndexValue(rootIndexValue.slice(0,-1));
     setOpenRootValue(openRootValue.slice(0, -1));
-    return calcExpParam + `**(1/${index})`
+    return calcExpParam + `**(1/${index}))`
 }
 
 export function getRootIndex(calcExp){
     let rootIndex = ""
+    //console.log(calcExp[calcExp.length-2], calcExp.length-2)
     if(calcExp[calcExp.length-1]==")"){
+        
         let open=1; 
         for(let i=calcExp.length-1; i>=0 && open!=0; i--){
             rootIndex=calcExp[i]+rootIndex;

@@ -80,11 +80,19 @@ function handlerAns({inputExpStateParam, calcExpStateParam, resultStateParam, an
     }
 }
 
-function handlerSqrt({ inputExpStateParam, rootIndexStateParam, openRootStateParam}){
+function handlerSqrt({ inputExpStateParam, rootIndexStateParam, openRootStateParam, calcExpStateParam}){
     const [inputExpValue, setInputExpValue] = inputExpStateParam
     const [rootIndexValue, setRootIndexValue] = rootIndexStateParam
     const [openRootValue, setOpenRootValue] = openRootStateParam
+    const [calcExpValue, setCalcExpValue] = calcExpStateParam
+    let calcExp=calcExpValue
 
+    if(openRootValue[openRootValue.length-1]==0){
+        calcExp=calculateRoot(rootIndexStateParam,openRootStateParam,calcExpValue)
+    }
+    calcExp+="("
+
+    setCalcExpValue(calcExp)
     setOpenRootValue([...openRootValue,0])
     setInputExpValue(inputExpValue+rootSymbol);
     setRootIndexValue([...rootIndexValue,2]);
@@ -95,16 +103,20 @@ function handlerNthRoot({ inputExpStateParam, calcExpStateParam, rootIndexStateP
     const [calcExpValue, setCalcExpValue] = calcExpStateParam
     const [rootIndexValue,setRootIndexValue]=rootIndexStateParam
     const [openRootValue, setOpenRootValue] = openRootStateParam
-
+    let calcExp=calcExpValue
+    if (openRootValue[openRootValue.length - 1] == 0) {
+        calcExp = calculateRoot(rootIndexStateParam, openRootStateParam, calcExpValue)
+    }
+    const rootIndex = getRootIndex(calcExp)
     setOpenRootValue([...openRootValue, 0])
+    calcExp = calcExp.slice(0, -rootIndex.length);
+    calcExp += "("
     setInputExpValue(inputExpValue+nthRootSymbol)
     /*Divido l'espressione a ogni operatore per determinare quale numero è l'indice di radice */
-    // eslint-disable-next-line no-useless-escape
-    const rootIndex=getRootIndex(calcExpValue)
+
     setRootIndexValue( [...rootIndexValue, rootIndex] )//prendo l'indice di radice (ultimo numero)
-    
     /*Tolgo l'indice di radice togliendo tanti caratteri quanta la lunghezza dell'indice*/
-    setCalcExpValue( calcExpValue.slice(0, -rootIndex.length) ); 
+    setCalcExpValue( calcExp ); 
 }
 
 const tasti = [
