@@ -6,14 +6,15 @@ import Context from "./Context.jsx";
 export default function App(){
   const [inputExpValue, setInputExpValue] = useState(""); //espressione inserita
   const [calcExpValue, setCalcExpValue] = useState(""); //espressione da valutare
-  const [resultValue, setResultValue] = useState();
+  const [resultValue, setResultValue] = useState(); //risultato
   const [ansValue,setAnsValue]=useState(); //valore ottenuto dal tasto Ans
   const [rootIndexValue, setRootIndexValue]=useState([]); //indice di una radice
-  const [rootNumberValue, setRootNumberValue]=useState(0);
-
   /*segnala il numero di parentesi non chiuse quando si ha una parentesi relativa a una 
   radice quadrata aperta*/
   const [openRootValue,setOpenRootValue]=useState([]);
+  /*Gli stati che sono degli array servono per avere dati per ogni radice non ancora risolta
+  Quando una radice viene risolta l'array viene tagliato
+  */
   return (
       <div id="App">
           <div id="calcolatrice">
@@ -24,7 +25,6 @@ export default function App(){
                       resultState: [resultValue, setResultValue],
                       ansState: [ansValue, setAnsValue],
                       rootIndexState: [rootIndexValue,setRootIndexValue],
-                      rootNumberState: [rootNumberValue, setRootNumberValue],
                       openRootState: [openRootValue,setOpenRootValue]
                   }}
               >

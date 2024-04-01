@@ -1,13 +1,13 @@
 /* eslint-disable no-unused-vars */
-import { calculateRoot } from "./Funzioni";
+import { calculateRoot,getRootIndex } from "./Funzioni";
 /*
-    //? "2nd","deg","?","??","???",
-    //? "sin","cos","tan","log","ln",
-    //* "pi/e","rx","px","(",")",
-    //* "7","8","9","AC","Del",
-    //* "4","5","6","x","/",
-    //* "1","2","3","+","-",
-    //* ".","0","Ans","=","Mod",
+    ? "2nd","deg","?","??","???",
+    ? "sin","cos","tan","log","ln",
+    * "pi/e","rx","px","(",")",
+    * "7","8","9","AC","Del",
+    * "4","5","6","x","/",
+    * "1","2","3","+","-",
+    * ".","0","Ans","=","Mod",
 */
 
 const rootSymbol = String.fromCharCode(0x221A);
@@ -45,7 +45,6 @@ function handlerEqual({resultStateParam, calcExpStateParam, ansStateParam, rootI
                 console.error("Errore")
         }
     }
-    console.log(risultato);
     setCalcExpValue(exp);
     setResultValue(risultato);
     setAnsValue(risposta);
@@ -81,38 +80,31 @@ function handlerAns({inputExpStateParam, calcExpStateParam, resultStateParam, an
     }
 }
 
-//! Le radici non funzionano nel caso di radice di radice
-
-function handlerSqrt({ inputExpStateParam, calcExpStateParam, rootIndexStateParam, openRootStateParam}){
+function handlerSqrt({ inputExpStateParam, rootIndexStateParam, openRootStateParam}){
     const [inputExpValue, setInputExpValue] = inputExpStateParam
-    const [calcExpValue, setCalcExpValue] = calcExpStateParam
     const [rootIndexValue, setRootIndexValue] = rootIndexStateParam
     const [openRootValue, setOpenRootValue] = openRootStateParam
-    //const [rootNumberValue, setRootNumberValue] =rootNumberStateParam
 
-    //setRootNumberValue(rootNumberValue+1);
     setOpenRootValue([...openRootValue,0])
-
     setInputExpValue(inputExpValue+rootSymbol);
-    
     setRootIndexValue([...rootIndexValue,2]);
 }
 
-function handlerNthRoot({inputExpStateParam, calcExpStateParam, rootIndexStateParam}){
+function handlerNthRoot({ inputExpStateParam, calcExpStateParam, rootIndexStateParam, openRootStateParam }){
     const [inputExpValue, setInputExpValue] = inputExpStateParam
     const [calcExpValue, setCalcExpValue] = calcExpStateParam
     const [rootIndexValue,setRootIndexValue]=rootIndexStateParam
-    setInputExpValue(inputExpValue+nthRootSymbol)
+    const [openRootValue, setOpenRootValue] = openRootStateParam
 
+    setOpenRootValue([...openRootValue, 0])
+    setInputExpValue(inputExpValue+nthRootSymbol)
     /*Divido l'espressione a ogni operatore per determinare quale numero è l'indice di radice */
     // eslint-disable-next-line no-useless-escape
-    const regExpr = /[-+*\/]/
-    const arrayExp = calcExpValue.split(regExpr);
-    const rootIndex = arrayExp[arrayExp.length - 1];
-    setRootIndexValue( rootIndex )//prendo l'indice di radice (ultimo numero)
-
+    const rootIndex=getRootIndex(calcExpValue)
+    setRootIndexValue( [...rootIndexValue, rootIndex] )//prendo l'indice di radice (ultimo numero)
+    
     /*Tolgo l'indice di radice togliendo tanti caratteri quanta la lunghezza dell'indice*/
-    setCalcExpValue( calcExpValue.slice(0, -rootIndex.length) );
+    setCalcExpValue( calcExpValue.slice(0, -rootIndex.length) ); 
 }
 
 const tasti = [
