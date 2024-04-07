@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { calculateRoot,getRootIndex } from "./Funzioni";
+import { calculateRoot,gestisciRadici,getRootIndex } from "./Funzioni";
 /*
     ? "2nd","deg","?","??","???",
     ? "sin","cos","tan","log","ln",
@@ -50,10 +50,16 @@ function handlerEqual({resultStateParam, calcExpStateParam, ansStateParam, rootI
     setAnsValue(risposta);
 }
 
-function handlerDel({inputExpStateParam}){
+function handlerDel({inputExpStateParam,openRootStateParam,rootIndexStateParam}){
     const [inputExpValue,setInputExpValue]=inputExpStateParam;
-    const newValue=inputExpValue.slice(0,inputExpValue.length-1);
-    setInputExpValue(newValue);
+    let newValue=inputExpValue.slice(0,inputExpValue.length-1);
+    let i=0;
+    
+    for(let i=0; i<5; i++){
+        setInputExpValue(prev=>prev+"0");
+    }
+    // newValue=gestisciRadici(openRootStateParam,rootIndexStateParam)
+    // setInputExpValue(newValue);
     console.error("Not finished");
 }
 

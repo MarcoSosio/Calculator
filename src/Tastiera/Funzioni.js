@@ -70,7 +70,6 @@ export function calculateRoot(rootIndexStateParam,openRootStateParam,calcExpPara
 
 export function getRootIndex(calcExp){
     let rootIndex = ""
-    //console.log(calcExp[calcExp.length-2], calcExp.length-2)
     if(calcExp[calcExp.length-1]==")"){
         
         let open=1; 

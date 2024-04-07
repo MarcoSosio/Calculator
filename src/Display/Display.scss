@@ -12,16 +12,21 @@
         content: "";
         position: absolute;
         bottom: -10px;
+        
     }
     .calcoli{
         color: rgb(213, 213, 213);
-        &#input{
-            font-size: 2rem;
-        }
+        width: 100%;
+        //fontsize handled in Display.jsx
         &#output{
-            font-size: 3rem;
             text-align: end;
             color: white;
+        }
+        &.output-short{
+            font-size: 3rem;
+        }
+        &.output-long{
+            font-size: 2.5rem;
         }
     }
 }
