@@ -1,8 +1,9 @@
 /* eslint-disable no-inner-declarations */
 import "./Bottone.scss";
 import Context from "../Context.jsx";
-import { useContext} from "react";
-import { gestisciRadici } from "../Tastiera/Funzioni.js";
+import { useContext, useEffect} from "react";
+import { gestisciRadici,gestisci_del} from "../Tastiera/Funzioni.js";
+import tasti from "../Tastiera/Tasti_elenco.js";
 // eslint-disable-next-line react/prop-types
 export default function Bottone({ children, inputElementProp, calcElementProp, functProp}) {
     const $context = useContext(Context);
@@ -13,12 +14,16 @@ export default function Bottone({ children, inputElementProp, calcElementProp, f
         ansState,
         rootIndexState,
         openRootState,
-        rootNumberState,
+        _delInputExpState_,
+        indexElementState
     } = $context;
+
     const [inputExpValue, setInputExpValue] = inputExpState;
     const [calcExpValue, setCalcExpValue] = calcExpState;
-    const [rootIndexValue,setRootIndexValue] =rootIndexState
-    const [openRootValue,setOpenRootValue] = openRootState;
+    const [_delInputExpValue_, _setDelInputExpValue_] = _delInputExpState_;
+    const [indexElementValue,setIndexElementValue]=indexElementState;
+    //const [rootIndexValue,setRootIndexValue] =rootIndexState
+    //const [openRootValue,setOpenRootValue] = openRootState;
     
     const parameters = {
         inputExpStateParam: inputExpState,
@@ -26,10 +31,26 @@ export default function Bottone({ children, inputElementProp, calcElementProp, f
         resultStateParam: resultState,
         ansStateParam: ansState,
         rootIndexStateParam: rootIndexState,
-        rootNumberStateParam: rootNumberState,
-        openRootStateParam: openRootState
+        openRootStateParam: openRootState,
+        _delInputExpStateParam_:_delInputExpState_,
+        indexElementStateParam: indexElementState,
     };
 
+    
+    useEffect(
+        function(){
+            //condizione inserita per eseguire l'effetto solo per un componente
+            //effetto messo qui per comodità si sarebbe potuto mettere altrove
+            if(calcElementProp=="0")
+            {
+                gestisci_del(parameters, tasti);
+            }
+            
+        },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [_delInputExpValue_,indexElementValue]
+    )
+    
     function handler() {
         
         /* Gestisco i tatsi che hanno funzioni spaciali tramite un apposita funzione

@@ -15,6 +15,8 @@ export default function App(){
   /*Gli stati che sono degli array servono per avere dati per ogni radice non ancora risolta
   Quando una radice viene risolta l'array viene tagliato
   */
+ const [_delInputExpValue_,_setDelInputExpValue_]=useState("");
+ const [indexElementValue, setIndexElementValue] = useState(null);
   return (
       <div id="App">
           <div id="calcolatrice">
@@ -25,7 +27,9 @@ export default function App(){
                       resultState: [resultValue, setResultValue],
                       ansState: [ansValue, setAnsValue],
                       rootIndexState: [rootIndexValue,setRootIndexValue],
-                      openRootState: [openRootValue,setOpenRootValue]
+                      openRootState: [openRootValue,setOpenRootValue],
+                      _delInputExpState_: [_delInputExpValue_,_setDelInputExpValue_],
+                      indexElementState: [indexElementValue,setIndexElementValue]
                   }}
               >
                   <Display></Display>

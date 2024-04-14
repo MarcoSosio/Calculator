@@ -1,14 +1,15 @@
+
 export function gestisciRadici(openRootStateParam, rootIndexStateParam, calcElementPropParam,calcExpParam) {
 
     const [openRootValue,setOpenRootValue]=openRootStateParam;
     const [rootIndexValue,setRootIndexValue]=rootIndexStateParam;
     let calcExp=calcExpParam;
-    function newOpenRootValue(x, pos) {
+    function newOpenRootValue(x, pos, prevOpenRootValue) {
         /*
         x - valore da sommare o sottrarre (+|- 1)
         pos - numero di posizioni da indietreggiare rispetto all'ultima (che ha valore di pos=0)
         */
-        let newValue = openRootValue;
+        let newValue = prevOpenRootValue;
         newValue[newValue.length - 1 - pos] += x
         return newValue
     }
@@ -26,10 +27,10 @@ export function gestisciRadici(openRootStateParam, rootIndexStateParam, calcElem
             );
         } else if (calcElementPropParam == '(') {
             setOpenRootValue(
-                newOpenRootValue(+1, 0)
+                prevOpenRootValue => newOpenRootValue(+1, 0, prevOpenRootValue)
             );
         } else if (calcElementPropParam == ')') {
-            let $openRootValue;
+            let pos;
             if (openRootValue[openRootValue.length - 1] == 0) {
                 /*
                 ! Quando valutiamo questa condizione non abbiamo ancora aggiornato l'espressione
@@ -48,23 +49,28 @@ export function gestisciRadici(openRootStateParam, rootIndexStateParam, calcElem
                     openRootStateParam,
                     calcExp
                 );
-                $openRootValue = newOpenRootValue(-1, 1);
+                pos=1
             } else {
-                $openRootValue = newOpenRootValue(-1, 0);
+                pos=0
             }
-            setOpenRootValue($openRootValue);
+            setOpenRootValue(
+                prevOpenRootValue=>newOpenRootValue(-1,pos,prevOpenRootValue)
+            );
         }
     }
     return calcExp;
 }
 
 export function calculateRoot(rootIndexStateParam,openRootStateParam,calcExpParam){
-    console.log(openRootStateParam)
     const [rootIndexValue, setRootIndexValue] = rootIndexStateParam
     const [openRootValue,setOpenRootValue]=openRootStateParam
     const index = rootIndexValue[rootIndexValue.length-1]
-    setRootIndexValue(rootIndexValue.slice(0,-1));
-    setOpenRootValue(openRootValue.slice(0, -1));
+    setRootIndexValue(
+        rootIndexValue.slice(0,-1)
+    );
+    setOpenRootValue(
+        openRootValue.slice(0, -1)
+    );
     return calcExpParam + `**(1/${index}))`
 }
 
@@ -93,4 +99,90 @@ export function getRootIndex(calcExp){
         rootIndex=rootIndex.replace("(","");
     }
     return rootIndex
+}
+
+function findTasto(inputElementParam,tasti)
+{
+    for(let item of tasti)
+    {
+        // TODO 
+        //! NON TUTTI I TATSI HANNO UNA PROPRIETA' inputElement E TALE PROPRIETÀ
+        //! NON SEMPRE CORRIPONDE A tasto 
+        if(item.tasto == inputElementParam){
+            return item.tasto
+        }
+    }
+}
+
+//find calcElement from inputElement
+function findCalcElement(inputElementParam,tasti) {
+    for (let item of tasti) {
+        if (item.tasto == inputElementParam && item.calcElement) {
+            return item.calcElement;
+        }
+    }
+    return null;
+}
+
+//find funct from inputElement
+function findFunct(inputElementParam,tasti) {
+    for (let item of tasti) {
+        if (item.tasto == inputElementParam && item.funct) {
+            return item.funct;
+        }
+    }
+    return null;
+}
+// TODO DEVO TROVARE LA FUNZIONE ASSOCIATA DALL'ELEMENTO TASTO E NON INPUTELEMENT
+// TODO PERCHE' LE RADICI NON HANNO INPUTELEMENT
+
+export function gestisci_del(parameters,tasti) {
+    //! SISTEMARE CASO DI RADICI N-ESIME    
+    const {_delInputExpStateParam_, indexElementStateParam, 
+        openRootStateParam, rootIndexStateParam, inputExpStateParam,
+        calcExpStateParam
+    }=parameters
+
+    const [_delInputExpValue_,_setDelInputExpValue_]=_delInputExpStateParam_;
+    const [indexElementValue,setIndexElementValue]=indexElementStateParam;
+    const [calcExpValue,setCalcExpValue]=calcExpStateParam;
+    const [inputExpValue, setInputExpValue]=inputExpStateParam;
+
+    if (_delInputExpValue_ && indexElementValue != null) {
+        console.log("_delInputExpValue_ "+_delInputExpValue_);
+        console.log("indexElementValue "+indexElementValue)
+        const inputElement = _delInputExpValue_[indexElementValue];
+        const tasto=findTasto(inputElement,tasti)
+        console.log("Tasto "+tasto)
+        const matchedCalcElement = findCalcElement(tasto, tasti);
+        const matchedFunct = findFunct(tasto, tasti);
+        console.log(inputElement, matchedCalcElement, matchedFunct);
+
+        if (matchedCalcElement == null && matchedFunct) {
+            console.log("GESTORE CHIAMATO")
+            matchedFunct(parameters)
+        }
+        else if (matchedFunct == null && matchedCalcElement) {
+            console.log("A")
+            let $calcExp = calcExpValue;
+            $calcExp = gestisciRadici(
+                openRootStateParam,
+                rootIndexStateParam,
+                matchedCalcElement,
+                $calcExp
+            );
+            setInputExpValue(inputExpValue + tasto);
+            $calcExp += matchedCalcElement;
+            setCalcExpValue($calcExp);
+        }
+        else {
+            console.error("ERRORE")
+        }
+
+        if (indexElementValue < _delInputExpValue_.length - 1) {
+            setIndexElementValue(indexElementValue + 1);
+        } else {
+            setIndexElementValue(null);
+        }
+    }
 }

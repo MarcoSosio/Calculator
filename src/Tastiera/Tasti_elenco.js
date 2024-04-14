@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { calculateRoot,gestisciRadici,getRootIndex } from "./Funzioni";
+import { calculateRoot,getRootIndex } from "./Funzioni";
 /*
     ? "2nd","deg","?","??","???",
     ? "sin","cos","tan","log","ln",
@@ -50,19 +50,6 @@ function handlerEqual({resultStateParam, calcExpStateParam, ansStateParam, rootI
     setAnsValue(risposta);
 }
 
-function handlerDel({inputExpStateParam,openRootStateParam,rootIndexStateParam}){
-    const [inputExpValue,setInputExpValue]=inputExpStateParam;
-    let newValue=inputExpValue.slice(0,inputExpValue.length-1);
-    let i=0;
-    
-    for(let i=0; i<5; i++){
-        setInputExpValue(prev=>prev+"0");
-    }
-    // newValue=gestisciRadici(openRootStateParam,rootIndexStateParam)
-    // setInputExpValue(newValue);
-    console.error("Not finished");
-}
-
 function handlerAC({inputExpStateParam, calcExpStateParam, resultStateParam}){
     const [inputExpValue, setInputExpValue] = inputExpStateParam;
     const [calcExpValue, setCalcExpValue] = calcExpStateParam;
@@ -71,6 +58,52 @@ function handlerAC({inputExpStateParam, calcExpStateParam, resultStateParam}){
     setCalcExpValue("");
     setResultValue("");
 }
+
+function handlerDel(params){
+    /*
+    1- Prendo la inputExp
+    2- La copio in una variabile toglieno l'ultimo elemento
+    3- Azzero tutti gli stati
+    4- Scorro ogni elemento dell'espressione facendo ciò che faccio quando premo un tasto
+        A- Aggiorno lo stato
+        B- Rendring per rendere disponibile il nuovo valore
+
+        Esegui il rendring non con un ciclo for ma con
+        -useEffect
+    */
+    const {
+        inputExpStateParam,
+        calcExpStateParam,
+        rootIndexStateParam,
+        openRootStateParam,
+        _delInputExpStateParam_,
+        indexElementStateParam
+    } = params;
+
+    const [inputExpValue,setInputExpValue]=inputExpStateParam;
+    const [calcExpValue,setCalcExpValue]=calcExpStateParam;
+    const [openRootValue,setOpenRootValue]=openRootStateParam;
+    const [rootIndexValue,setRootIndexValue]=rootIndexStateParam;
+    const [_delInputExpValue_,_setDelInputExpValue_]=_delInputExpStateParam_
+    const [indexElementValue,setIndexElementValue] = indexElementStateParam
+
+    //! slice(0,-1) non gestisce correttamente la radice nesima perché lascia la x
+    let newInputExpValue = inputExpValue.slice(0, -1);
+    // se l'ultimo carattere e x apice (gestisce il caso delle radici n-esime)
+    if (newInputExpValue[newInputExpValue.length - 1] === String.fromCharCode(0x02E3)){
+        newInputExpValue.slice(0,-1);
+    }
+    _setDelInputExpValue_(newInputExpValue);
+
+    //reset all to recalculate
+    setInputExpValue("");
+    setCalcExpValue("");
+    setOpenRootValue([]);
+    setRootIndexValue([]);
+
+    setIndexElementValue(0); //set to 0 instead of null
+}
+
 
 function handlerAns({inputExpStateParam, calcExpStateParam, resultStateParam, ansStateParam}){
     const [inputExpValue, setInputExpValue] = inputExpStateParam
@@ -91,13 +124,14 @@ function handlerSqrt({ inputExpStateParam, rootIndexStateParam, openRootStatePar
     const [rootIndexValue, setRootIndexValue] = rootIndexStateParam
     const [openRootValue, setOpenRootValue] = openRootStateParam
     const [calcExpValue, setCalcExpValue] = calcExpStateParam
-    let calcExp=calcExpValue
+    
+    let calcExp = calcExpValue
+    console.log("PrevCalcExp " + calcExp)
 
-    if(openRootValue[openRootValue.length-1]==0){
-        calcExp=calculateRoot(rootIndexStateParam,openRootStateParam,calcExpValue)
+    if (openRootValue[openRootValue.length - 1] == 0) {
+        calcExp = calculateRoot(rootIndexStateParam, openRootStateParam, calcExpValue)
     }
-    calcExp+="("
-
+    calcExp += "("
     setCalcExpValue(calcExp)
     setOpenRootValue([...openRootValue,0])
     setInputExpValue(inputExpValue+rootSymbol);
@@ -120,12 +154,12 @@ function handlerNthRoot({ inputExpStateParam, calcExpStateParam, rootIndexStateP
     setInputExpValue(inputExpValue+nthRootSymbol)
     /*Divido l'espressione a ogni operatore per determinare quale numero è l'indice di radice */
 
-    setRootIndexValue( [...rootIndexValue, rootIndex] )//prendo l'indice di radice (ultimo numero)
+    setRootIndexValue([...rootIndexValue, rootIndex] )//prendo l'indice di radice (ultimo numero)
     /*Tolgo l'indice di radice togliendo tanti caratteri quanta la lunghezza dell'indice*/
     setCalcExpValue( calcExp ); 
 }
 
-const tasti = [
+export const tasti = [
     /*
     primo elemento: ciò che appare sul bottone,
     secondo elemento: ciò che l'utente inserisce,
@@ -138,8 +172,8 @@ const tasti = [
     {},
     {},
 
-    { tasto: rootSymbol, inputElement: rootSymbol, calcElement:"", funct:handlerSqrt},
-    { tasto: nthRootSymbol, inputElement: nthRootSymbol, calcElement: "",funct: handlerNthRoot},
+    { tasto: rootSymbol, inputElement: "", calcElement:"", funct:handlerSqrt},
+    { tasto: nthRootSymbol, inputElement: "", calcElement: "",funct: handlerNthRoot},
     { tasto: "^", inputElement: "^", calcElement: "**" },
     { tasto: "(", inputElement: "(", calcElement: "(" },
     { tasto: ")", inputElement: ")", calcElement: ")" },
