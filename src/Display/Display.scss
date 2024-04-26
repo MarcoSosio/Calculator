@@ -1,7 +1,5 @@
 #Display{
     flex: 1;
-    //background-color: rgb(56, 56, 56);
-    //border: solid 1px rgb(173, 173, 173);
     position: relative;
     border-radius: 15px;
     &::after{
@@ -17,16 +15,15 @@
     .calcoli{
         color: rgb(213, 213, 213);
         width: 100%;
+        font-family: sans-serif;
         //fontsize handled in Display.jsx
+        &#input{
+            height: 40%;
+        }
         &#output{
             text-align: end;
             color: white;
-        }
-        &.output-short{
-            font-size: 3rem;
-        }
-        &.output-long{
-            font-size: 2.5rem;
+            height: 60%;
         }
     }
 }

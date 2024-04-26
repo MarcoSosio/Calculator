@@ -18,6 +18,20 @@ module.exports = {
     ],
     'no-unused-vars':[
       'warn'
-    ]
+    ],
+    "quotes":[
+      "warn",
+      "double"
+    ],
+    "semi":[
+      "warn",
+      "always"
+    ],
+    "comma-dangle": [
+      "error", "never"
+    ],
+    "comma-spacing": ["warn", 
+      { "before": false, "after": true }
+    ],
   },
 }
