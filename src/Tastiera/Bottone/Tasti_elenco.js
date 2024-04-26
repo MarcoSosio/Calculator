@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { calculateRoot, gestisciSeno, getRootIndex } from "./Funzioni";
+import { calculateRoot, gestisciSeno, getRootIndex, gestisciRadici } from "./Funzioni";
 /*
     ? "2nd","deg","?","??","???",
     ? "sin","cos","tan","log","ln",
@@ -215,6 +215,26 @@ function handlerSin({ inputExpStateParam, calcExpStateParam }) {
     setInputExpValue(inputExpValue + "sin");
 }
 
+function $handlerGENERIC(
+    {inputExpStateParam, calcExpStateParam, openRootStateParam, rootIndexStateParam,
+    inputElementParam, calcElementParam}
+){
+    const [inputExpValue, setInputExpValue] = inputExpStateParam;
+    const [calcExpValue, setCalcExpValue] = calcExpStateParam;
+
+    //! Come si può notare si imposta lo stato sul nuovo valore di calcExpValue
+    //! solo dopo aver fatto i calcoli, dunque il valore appena inserito 
+    //! (calcElementProp) non sarà parte dell'espressione al momento dei calcoli
+    let calcExp = calcExpValue;
+    //prettier-ignore
+    calcExp = gestisciRadici(
+        openRootStateParam, rootIndexStateParam, calcElementParam, calcExp
+    );
+    setInputExpValue(inputExpValue + inputElementParam);
+    calcExp += calcElementParam;
+    setCalcExpValue(calcExp);
+}
+
 export const tasti = [
     /*
     tasto: ciò che appare sul bottone,
@@ -233,7 +253,7 @@ export const tasti = [
     D/R --> gradi/radianti
     */
 
-    { tasto: piSymbol, inputElement: piSymbol, calcElement: String(Math.PI) },
+    { tasto: piSymbol, inputElement: piSymbol, calcElement: String(Math.PI), funct:$handlerGENERIC },
     { tasto: "D/R", inputElement: "", calcElement: "", funct: handlerDegRad },
     { tasto: "sin", inputElement: "sin", calcElement: "", funct: handlerSin },
     {},
@@ -251,40 +271,40 @@ export const tasti = [
         calcElement: "",
         funct: handlerNthRoot
     }, //radice n-esima
-    { tasto: "^", inputElement: "^", calcElement: "**" },
-    { tasto: "(", inputElement: "(", calcElement: "(" },
-    { tasto: ")", inputElement: ")", calcElement: ")" },
+    { tasto: "^", inputElement: "^", calcElement: "**", funct:$handlerGENERIC},
+    { tasto: "(", inputElement: "(", calcElement: "(", funct:$handlerGENERIC },
+    { tasto: ")", inputElement: ")", calcElement: ")", funct:$handlerGENERIC },
 
     //riga---
 
-    { tasto: "7", inputElement: "7", calcElement: "7" },
-    { tasto: "8", inputElement: "8", calcElement: "8" },
-    { tasto: "9", inputElement: "9", calcElement: "9" },
+    { tasto: "7", inputElement: "7", calcElement: "7", funct:$handlerGENERIC },
+    { tasto: "8", inputElement: "8", calcElement: "8", funct:$handlerGENERIC },
+    { tasto: "9", inputElement: "9", calcElement: "9", funct:$handlerGENERIC },
     { tasto: "AC", inputElement: "", calcElement: "", funct: handlerAC },
     { tasto: "Del", inputElement: "", calcElement: "", funct: handlerDel },
 
     //riga---
 
-    { tasto: "4", inputElement: "4", calcElement: "4" },
-    { tasto: "5", inputElement: "5", calcElement: "5" },
-    { tasto: "6", inputElement: "6", calcElement: "6" },
-    { tasto: "x", inputElement: "x", calcElement: "*" },
-    { tasto: "/", inputElement: String.fromCharCode(247), calcElement: "/" },
+    { tasto: "4", inputElement: "4", calcElement: "4", funct:$handlerGENERIC },
+    { tasto: "5", inputElement: "5", calcElement: "5", funct:$handlerGENERIC },
+    { tasto: "6", inputElement: "6", calcElement: "6", funct:$handlerGENERIC },
+    { tasto: "x", inputElement: "x", calcElement: "*", funct:$handlerGENERIC },
+    { tasto: "/", inputElement: String.fromCharCode(247), calcElement: "/", funct:$handlerGENERIC },
 
     //riga---
 
-    { tasto: "1", inputElement: "1", calcElement: "1" },
-    { tasto: "2", inputElement: "2", calcElement: "2" },
-    { tasto: "3", inputElement: "3", calcElement: "3" },
-    { tasto: "+", inputElement: "+", calcElement: "+" },
-    { tasto: "-", inputElement: "-", calcElement: "-" },
+    { tasto: "1", inputElement: "1", calcElement: "1", funct:$handlerGENERIC },
+    { tasto: "2", inputElement: "2", calcElement: "2", funct:$handlerGENERIC },
+    { tasto: "3", inputElement: "3", calcElement: "3", funct:$handlerGENERIC },
+    { tasto: "+", inputElement: "+", calcElement: "+", funct:$handlerGENERIC },
+    { tasto: "-", inputElement: "-", calcElement: "-", funct:$handlerGENERIC },
 
     //riga---
 
-    { tasto: ".", inputElement: "0", calcElement: "0" },
-    { tasto: "0", inputElement: "0", calcElement: "0" },
+    { tasto: ".", inputElement: ".", calcElement: ".", funct: $handlerGENERIC },
+    { tasto: "0", inputElement: "0", calcElement: "0", funct:$handlerGENERIC},
     { tasto: "Ans", inputElement: "Ans", calcElement: "", funct: handlerAns },
     { tasto: "=", inputElement: "", calcElement: "", funct: handlerEqual },
-    { tasto: "Mod", inputElement: "Mod", calcElement: "%" }
+    { tasto: "Mod", inputElement: "Mod", calcElement: "%", funct:$handlerGENERIC }
 ];
 export default tasti;

@@ -35,7 +35,10 @@ export default function Bottone({ children, inputElementProp, calcElementProp, f
         openRootStateParam: openRootState,
         _delInputExpStateParam_: _delInputExpState_,
         indexElementStateParam: indexElementState,
-        degRadStateParam: degRadState
+        degRadStateParam: degRadState,
+
+        inputElementParam: inputElementProp,
+        calcElementParam: calcElementProp
     };
 
     useEffect(
