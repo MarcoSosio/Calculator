@@ -27,7 +27,7 @@ export default function App() {
   */
 
 
-    const [_delInputExpValue_, _setDelInputExpValue_] = useState("");
+    const [_delInputExpValue_, _setDelInputExpValue_] = useState([]);
     const [indexElementValue, setIndexElementValue] = useState(null);
 
     /*indica se gli angoli vengono misurati in gradi sessagesimali (deg) o in 

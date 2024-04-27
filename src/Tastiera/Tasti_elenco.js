@@ -1,5 +1,7 @@
 /* eslint-disable no-unused-vars */
-import { calculateRoot, gestisciSeno, getRootIndex, gestisciRadici } from "./Funzioni";
+import { getRootIndex } from "./functions/rootFunctions";
+import { calculateRoot } from "./functions/rootFunctions";
+import { gestisciRadici } from "./functions/rootFunctions";
 /*
     ? "2nd","deg","?","??","???",
     ? "sin","cos","tan","log","ln",
@@ -13,6 +15,7 @@ import { calculateRoot, gestisciSeno, getRootIndex, gestisciRadici } from "./Fun
 const rootSymbol = String.fromCharCode(0x221a);
 const nthRootSymbol = String.fromCharCode(0x02e3) + rootSymbol;
 const piSymbol = String.fromCharCode(960);
+const divisionSymbol=String.fromCharCode(247);
 
 function handlerEqual({
     resultStateParam,
@@ -38,7 +41,9 @@ function handlerEqual({
     try {
         risultato = eval(exp);
         risposta = risultato;
-        if (!isFinite(risultato) || isNaN(risultato)) {
+        if (
+            //prettier-ignore
+            (!isFinite(risultato) || isNaN(risultato)) && risultato != undefined) {
             risultato = "Math Error";
             risposta = "";
         }
@@ -99,16 +104,16 @@ function handlerDel(params) {
         do {
             x = regExpr.exec(inputExpValue);
             if (x != null) {
-                inputExpValueArray.push(x);
+                //exec restituisce un array con varie informazioni
+                inputExpValueArray.push(x[0]);
             }
         } while (x != null);
         return inputExpValueArray;
     }
 
-    let newInputExpValueArray = splitInputExpValue(inputExpValue);
-    newInputExpValueArray = newInputExpValueArray.slice(0, -1);
-    const newInputExpValue= newInputExpValueArray.join();
-    _setDelInputExpValue_(newInputExpValue);
+    let newDelExpValue = splitInputExpValue(inputExpValue);
+    newDelExpValue = newDelExpValue.slice(0, -1);
+    _setDelInputExpValue_(newDelExpValue);
 
     //reset all to recalculate
     setInputExpValue("");
@@ -137,12 +142,15 @@ function handlerAns({
     }
 }
 
-function handlerSqrt({
-    inputExpStateParam,
-    rootIndexStateParam,
-    openRootStateParam,
-    calcExpStateParam
-}) {
+function handlerSqrt(
+    {
+        inputExpStateParam,
+        rootIndexStateParam,
+        openRootStateParam,
+        calcExpStateParam
+    },
+    { inputElementParam }
+) {
     const [inputExpValue, setInputExpValue] = inputExpStateParam;
     const [rootIndexValue, setRootIndexValue] = rootIndexStateParam;
     const [openRootValue, setOpenRootValue] = openRootStateParam;
@@ -160,16 +168,19 @@ function handlerSqrt({
     calcExp += "(";
     setCalcExpValue(calcExp);
     setOpenRootValue([...openRootValue, 0]);
-    setInputExpValue(inputExpValue + rootSymbol);
+    setInputExpValue(inputExpValue + inputElementParam);
     setRootIndexValue([...rootIndexValue, 2]);
 }
 
-function handlerNthRoot({
-    inputExpStateParam,
-    calcExpStateParam,
-    rootIndexStateParam,
-    openRootStateParam
-}) {
+function handlerNthRoot(
+    {
+        inputExpStateParam,
+        calcExpStateParam,
+        rootIndexStateParam,
+        openRootStateParam
+    },
+    { inputElementParam }
+) {
     const [inputExpValue, setInputExpValue] = inputExpStateParam;
     const [calcExpValue, setCalcExpValue] = calcExpStateParam;
     const [rootIndexValue, setRootIndexValue] = rootIndexStateParam;
@@ -190,7 +201,7 @@ function handlerNthRoot({
     setOpenRootValue([...openRootValue, 0]);
     calcExp = calcExp.slice(0, -rootIndex.length);
     calcExp += "(";
-    setInputExpValue(inputExpValue + nthRootSymbol);
+    setInputExpValue(inputExpValue + inputElementParam);
     /*Divido l'espressione a ogni operatore per determinare quale numero è l'indice di radice */
 
     setRootIndexValue([...rootIndexValue, rootIndex]); //prendo l'indice di radice (ultimo numero)
@@ -207,23 +218,20 @@ function handlerDegRad({ degRadStateParam }) {
     }
 }
 
-function handlerSin({ inputExpStateParam, calcExpStateParam }) {
-    const [inputExpValue, setInputExpValue] = inputExpStateParam;
-    const [calcExpValue, setCalcExpValue] = calcExpStateParam;
-
-    let calcExp = gestisciSeno();
-    setInputExpValue(inputExpValue + "sin");
-}
-
 function $handlerGENERIC(
-    {inputExpStateParam, calcExpStateParam, openRootStateParam, rootIndexStateParam,
-    inputElementParam, calcElementParam}
-){
+    {
+        inputExpStateParam,
+        calcExpStateParam,
+        openRootStateParam,
+        rootIndexStateParam
+    },
+    { inputElementParam, calcElementParam }
+) {
     const [inputExpValue, setInputExpValue] = inputExpStateParam;
     const [calcExpValue, setCalcExpValue] = calcExpStateParam;
 
     //! Come si può notare si imposta lo stato sul nuovo valore di calcExpValue
-    //! solo dopo aver fatto i calcoli, dunque il valore appena inserito 
+    //! solo dopo aver fatto i calcoli, dunque il valore appena inserito
     //! (calcElementProp) non sarà parte dell'espressione al momento dei calcoli
     let calcExp = calcExpValue;
     //prettier-ignore
@@ -253,58 +261,54 @@ export const tasti = [
     D/R --> gradi/radianti
     */
 
-    { tasto: piSymbol, inputElement: piSymbol, calcElement: String(Math.PI), funct:$handlerGENERIC },
+    //prettier-ignore
+    {tasto: piSymbol, inputElement: piSymbol, calcElement: String(Math.PI), funct: $handlerGENERIC },
     { tasto: "D/R", inputElement: "", calcElement: "", funct: handlerDegRad },
-    { tasto: "sin", inputElement: "sin", calcElement: "", funct: handlerSin },
+    {},
     {},
     {},
 
-    {
-        tasto: rootSymbol,
-        inputElement: rootSymbol,
-        calcElement: "",
-        funct: handlerSqrt
-    }, //radice quadrata
-    {
-        tasto: nthRootSymbol,
-        inputElement: nthRootSymbol,
-        calcElement: "",
-        funct: handlerNthRoot
-    }, //radice n-esima
-    { tasto: "^", inputElement: "^", calcElement: "**", funct:$handlerGENERIC},
-    { tasto: "(", inputElement: "(", calcElement: "(", funct:$handlerGENERIC },
-    { tasto: ")", inputElement: ")", calcElement: ")", funct:$handlerGENERIC },
+    //prettier-ignore
+    { tasto: rootSymbol, inputElement: rootSymbol, calcElement: "", funct: handlerSqrt }, //radice quadrata
+    //prettier-ignore
+    { tasto: nthRootSymbol, inputElement: nthRootSymbol, calcElement: "", funct: handlerNthRoot }, //radice n-esima
+    //prettier-ignore
+    { tasto: "^", inputElement: "^", calcElement: "**", funct: $handlerGENERIC },
+    { tasto: "(", inputElement: "(", calcElement: "(", funct: $handlerGENERIC },
+    { tasto: ")", inputElement: ")", calcElement: ")", funct: $handlerGENERIC },
 
     //riga---
 
-    { tasto: "7", inputElement: "7", calcElement: "7", funct:$handlerGENERIC },
-    { tasto: "8", inputElement: "8", calcElement: "8", funct:$handlerGENERIC },
-    { tasto: "9", inputElement: "9", calcElement: "9", funct:$handlerGENERIC },
+    { tasto: "7", inputElement: "7", calcElement: "7", funct: $handlerGENERIC },
+    { tasto: "8", inputElement: "8", calcElement: "8", funct: $handlerGENERIC },
+    { tasto: "9", inputElement: "9", calcElement: "9", funct: $handlerGENERIC },
     { tasto: "AC", inputElement: "", calcElement: "", funct: handlerAC },
     { tasto: "Del", inputElement: "", calcElement: "", funct: handlerDel },
 
     //riga---
 
-    { tasto: "4", inputElement: "4", calcElement: "4", funct:$handlerGENERIC },
-    { tasto: "5", inputElement: "5", calcElement: "5", funct:$handlerGENERIC },
-    { tasto: "6", inputElement: "6", calcElement: "6", funct:$handlerGENERIC },
-    { tasto: "x", inputElement: "x", calcElement: "*", funct:$handlerGENERIC },
-    { tasto: "/", inputElement: String.fromCharCode(247), calcElement: "/", funct:$handlerGENERIC },
+    { tasto: "4", inputElement: "4", calcElement: "4", funct: $handlerGENERIC },
+    { tasto: "5", inputElement: "5", calcElement: "5", funct: $handlerGENERIC },
+    { tasto: "6", inputElement: "6", calcElement: "6", funct: $handlerGENERIC },
+    { tasto: "x", inputElement: "x", calcElement: "*", funct: $handlerGENERIC },
+    //prettier-ignore
+    { tasto: "/", inputElement: divisionSymbol, calcElement: "/", funct: $handlerGENERIC},
 
     //riga---
 
-    { tasto: "1", inputElement: "1", calcElement: "1", funct:$handlerGENERIC },
-    { tasto: "2", inputElement: "2", calcElement: "2", funct:$handlerGENERIC },
-    { tasto: "3", inputElement: "3", calcElement: "3", funct:$handlerGENERIC },
-    { tasto: "+", inputElement: "+", calcElement: "+", funct:$handlerGENERIC },
-    { tasto: "-", inputElement: "-", calcElement: "-", funct:$handlerGENERIC },
+    { tasto: "1", inputElement: "1", calcElement: "1", funct: $handlerGENERIC },
+    { tasto: "2", inputElement: "2", calcElement: "2", funct: $handlerGENERIC },
+    { tasto: "3", inputElement: "3", calcElement: "3", funct: $handlerGENERIC },
+    { tasto: "+", inputElement: "+", calcElement: "+", funct: $handlerGENERIC },
+    { tasto: "-", inputElement: "-", calcElement: "-", funct: $handlerGENERIC },
 
     //riga---
 
     { tasto: ".", inputElement: ".", calcElement: ".", funct: $handlerGENERIC },
-    { tasto: "0", inputElement: "0", calcElement: "0", funct:$handlerGENERIC},
+    { tasto: "0", inputElement: "0", calcElement: "0", funct: $handlerGENERIC },
     { tasto: "Ans", inputElement: "Ans", calcElement: "", funct: handlerAns },
     { tasto: "=", inputElement: "", calcElement: "", funct: handlerEqual },
-    { tasto: "Mod", inputElement: "Mod", calcElement: "%", funct:$handlerGENERIC }
+    //prettier-ignore
+    { tasto: "Mod", inputElement: "Mod", calcElement: "%", funct: $handlerGENERIC }
 ];
 export default tasti;
