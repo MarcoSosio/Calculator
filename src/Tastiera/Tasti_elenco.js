@@ -24,7 +24,8 @@ function handlerEqual({
     ansStateParam,
     rootIndexStateParam,
     openRootStateParam,
-    degRadStateParam
+    degRadStateParam,
+    funExpStateParam
 }) {
     const [resultValue, setResultValue] = resultStateParam;
     const [calcExpValue, setCalcExpValue] = calcExpStateParam;
@@ -47,7 +48,7 @@ function handlerEqual({
         rootIndexValue.length != 0 && 
         isNaN(Number(rootIndexValue[rootIndexValue.length - 1]))
     ){
-        exp = calculateTrigonometric(rootIndexStateParam, openRootStateParam, degRadValue, exp);
+        exp = calculateTrigonometric(rootIndexStateParam, openRootStateParam, degRadValue, funExpStateParam, exp);
         console.log(exp);
     }
 
@@ -239,7 +240,11 @@ function handlerTrigonometric({ inputExpStateParam, calcExpStateParam, rootIndex
     const [openRootValue, setOpenRootValue] = openRootStateParam;
     setInputExpValue(inputExpValue + inputElementParam);
     setCalcExpValue(calcExpValue + calcElementParam);
-    setRootIndexValue([...rootIndexValue, "f"]);
+    if(inputElementParam=="tan "){
+        setRootIndexValue([...rootIndexValue, "t"]);
+    }else{
+        setRootIndexValue([...rootIndexValue, "f"]);
+    }
     setOpenRootValue([...openRootValue, 0]);
 }
 
@@ -257,7 +262,6 @@ function $handlerGENERIC(
     const [inputExpValue, setInputExpValue] = inputExpStateParam;
     const [calcExpValue, setCalcExpValue] = calcExpStateParam;
     const [degRadValue, setDegRadValue] = degRadStateParam;
-
     //! Come si può notare si imposta lo stato sul nuovo valore di calcExpValue
     //! solo dopo aver fatto i calcoli, dunque il valore appena inserito
     //! (calcElementProp) non sarà parte dell'espressione al momento dei calcoli
@@ -273,7 +277,8 @@ function $handlerGENERIC(
     calcExp += calcElementParam;
     setCalcExpValue(calcExp);
 }
-
+const calcElementTan = "parseFloat(  parseFloat(  Math.sin(  (";
+// ")*${fDtR}  ).toFixed(9)  )/parseFloat(  Math.cos(  (${funExpValue})*${fDtR}  ).toFixed(9)  )  )"
 export const tasti = [
     /*
     tasto: ciò che appare sul bottone,
@@ -300,7 +305,7 @@ export const tasti = [
     //prettier-ignore
     { tasto: "cos", inputElement: "cos ", calcElement:"parseFloat(Math.cos((", funct:handlerTrigonometric},
     //prettier-ignore
-    { tasto: "tan", inputElement: "tan ", calcElement:"parseFloat(Math.tan((", funct:handlerTrigonometric},
+    { tasto: "tan", inputElement: "tan ", calcElement:calcElementTan, funct:handlerTrigonometric},
 
     //prettier-ignore
     { tasto: rootSymbol, inputElement: rootSymbol, calcElement: "", funct: handlerSqrt }, //radice quadrata

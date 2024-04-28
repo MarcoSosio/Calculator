@@ -1,5 +1,5 @@
 #Tastiera {
-    flex: 3;
+    height: min-content;
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     grid-auto-rows: auto;

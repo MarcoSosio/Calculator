@@ -49,6 +49,7 @@ export function gestisciTrigonometric(
                 rootIndexStateParam,
                 openRootStateParam,
                 degRadValueParam,
+                funExpStateParam,
                 calcExp
             );
         } else if (calcElementParam == "(") {
@@ -72,6 +73,7 @@ export function gestisciTrigonometric(
                     rootIndexStateParam,
                     openRootStateParam,
                     degRadValueParam,
+                    funExpStateParam,
                     calcExp
                 );
                 pos = 1;
@@ -91,12 +93,13 @@ export function calculateTrigonometric(
     rootIndexStateParam,
     openRootStateParam,
     degRadValueParam,
+    funExpStateParam,
     calcExpParam
 ) {
     /*La funzione inserisce **(1/i) in modo da calcolare la radice*/
     const [rootIndexValue, setRootIndexValue] = rootIndexStateParam;
     const [openRootValue, setOpenRootValue] = openRootStateParam;
-    const index = rootIndexValue[rootIndexValue.length - 1];
+    const [funExpValue, setFunExpValue]= funExpStateParam;
     const fromDegtoRad = (2 * Math.PI)/360; //rapporto radianti/gradi
     let fDtR=1;
     if(degRadValueParam=="deg"){
@@ -104,5 +107,11 @@ export function calculateTrigonometric(
     }
     setRootIndexValue(rootIndexValue.slice(0, -1));
     setOpenRootValue(openRootValue.slice(0, -1));
-    return calcExpParam + `)*${fDtR}).toFixed(12))`;
+    if(rootIndexValue=="f"){
+        return calcExpParam + `)*${fDtR}).toFixed(9))`;
+    }
+    else if(rootIndexValue=="t"){
+        return calcExpParam + `)*${fDtR}  ).toFixed(9)  )/parseFloat(  Math.cos(  (${funExpValue})*${fDtR}  ).toFixed(9)  )  )`;
+    }
 }
+//tan(tan(4))

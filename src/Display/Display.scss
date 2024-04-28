@@ -1,7 +1,10 @@
 #Display{
+    box-sizing: border-box;
+    margin-bottom: 30px;
     flex: 1;
     position: relative;
     border-radius: 15px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
     &::after{
         display: block;
         width: 100%;
@@ -9,20 +12,22 @@
         background-color: rgb(142, 142, 142);
         content: "";
         position: absolute;
-        bottom: -10px;
+        bottom: 0px;
         font-family: sans-serif;
     }
+    display: flex;
+    flex-direction: column;
     .calcoli{
         color: rgb(213, 213, 213);
         width: 100%;
         //fontsize handled in Display.jsx
         &#input{
-            max-height: 40%;
+            flex: 1;
         }
         &#output{
             text-align: end;
             color: white;
-            max-height: 60%;
+            flex: 1;
             //white-space: nowrap;
         }
     }

@@ -16,7 +16,7 @@ export default function Display() {
     const { inputExpState, resultState, degRadState } = $context;
     const [inputExpValue, setInputExpValue] = inputExpState;
     const [resultValue, setResultValue] = resultState;
-    const [degRadValue, setDegRadValue] =degRadState
+    const [degRadValue, setDegRadValue] =degRadState;
 
     const [scalaFontSizeExp, setScalaFontSizeExp] = useState(1.5);
     const [scalaFontSizeResult, setScalaFontSizeResult] = useState(2);
