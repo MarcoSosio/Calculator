@@ -16,7 +16,8 @@ export default function Bottone({ children, inputElementProp, calcElementProp, f
         openRootState,
         _delInputExpState_,
         indexElementState,
-        degRadState
+        degRadState,
+        funExpState
     } = $context;
 
     //const [_delInputExpValue_, _setDelInputExpValue_] = _delInputExpState_;
@@ -30,7 +31,8 @@ export default function Bottone({ children, inputElementProp, calcElementProp, f
         openRootStateParam: openRootState,
         _delInputExpStateParam_: _delInputExpState_,
         indexElementStateParam: indexElementState,
-        degRadStateParam: degRadState
+        degRadStateParam: degRadState,
+        funExpStateParam: funExpState
     };
 
     //contiene l'elemento da inserire nell'espressione a schermo e quello da

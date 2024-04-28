@@ -10,20 +10,23 @@
         content: "";
         position: absolute;
         bottom: -10px;
-        
+        font-family: sans-serif;
     }
     .calcoli{
         color: rgb(213, 213, 213);
         width: 100%;
-        font-family: sans-serif;
         //fontsize handled in Display.jsx
         &#input{
-            height: 40%;
+            max-height: 40%;
         }
         &#output{
             text-align: end;
             color: white;
-            height: 60%;
+            max-height: 60%;
+            //white-space: nowrap;
         }
+    }
+    #deg-rad{
+        color: rgb(213, 213, 213);
     }
 }

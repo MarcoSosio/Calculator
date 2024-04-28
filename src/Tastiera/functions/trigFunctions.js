@@ -1,8 +1,10 @@
 /* eslint-disable no-unused-vars */
-export function gestisciRadici(
+export function gestisciTrigonometric(
     openRootStateParam,
     rootIndexStateParam,
-    calcElementPropParam,
+    calcElementParam,
+    funExpStateParam,
+    degRadValueParam,
     calcExpParam
 ) {
     /* Questa funzione permette di gestire e calcolare correttamente le radici.
@@ -24,6 +26,7 @@ export function gestisciRadici(
     */
     const [openRootValue, setOpenRootValue] = openRootStateParam;
     const [rootIndexValue, setRootIndexValue] = rootIndexStateParam;
+    const [funExpValue, setFunExpValue]=funExpStateParam;
     let calcExp = calcExpParam;
     function newOpenRootValue(x, pos, prevOpenRootValue) {
         /*
@@ -36,18 +39,22 @@ export function gestisciRadici(
         return newValue;
     }
 
-    if ( rootIndexValue.length != 0 && !isNaN( Number(rootIndexValue[rootIndexValue.length-1]) ) ) {
+    if ( rootIndexValue.length != 0 && isNaN( Number(rootIndexValue[rootIndexValue.length - 1]) ) ) {
         const operatori = ["+", "-", "*", "/", "**", "%"];
-        if (operatori.includes(calcElementPropParam) &&
+        
+        if (operatori.includes(calcElementParam) &&
             openRootValue[openRootValue.length - 1] == 0) {
-            calcExp = calculateRoot(
+            console.log("AA");
+            calcExp = calculateTrigonometric(
                 rootIndexStateParam,
                 openRootStateParam,
+                degRadValueParam,
                 calcExp
             );
-        } else if (calcElementPropParam == "(") {
+        } else if (calcElementParam == "(") {
             setOpenRootValue(newOpenRootValue(+1, 0, openRootValue));
-        } else if (calcElementPropParam == ")") {
+            setFunExpValue(funExpValue+calcElementParam);
+        } else if (calcElementParam == ")") {
             let pos;
             if (openRootValue[openRootValue.length - 1] == 0) {
                 /*
@@ -61,73 +68,41 @@ export function gestisciRadici(
                 relativa alla prima radice e non all'ultima, quindi avremo che
                 openRootValue = [0,0] piuttosto che [1,-1]
                 */
-                calcExp = calculateRoot(
+                calcExp = calculateTrigonometric(
                     rootIndexStateParam,
                     openRootStateParam,
+                    degRadValueParam,
                     calcExp
                 );
                 pos = 1;
             } else {
+                setFunExpValue(funExpValue+calcElementParam);
                 pos = 0;
             }
             setOpenRootValue(newOpenRootValue(-1, pos, openRootValue));
         }
+        else{
+            setFunExpValue(funExpValue + calcElementParam);
+        }
     }
     return calcExp;
 }
-export function calculateRoot(
+export function calculateTrigonometric(
     rootIndexStateParam,
     openRootStateParam,
+    degRadValueParam,
     calcExpParam
 ) {
     /*La funzione inserisce **(1/i) in modo da calcolare la radice*/
     const [rootIndexValue, setRootIndexValue] = rootIndexStateParam;
     const [openRootValue, setOpenRootValue] = openRootStateParam;
     const index = rootIndexValue[rootIndexValue.length - 1];
+    const fromDegtoRad = (2 * Math.PI)/360; //rapporto radianti/gradi
+    let fDtR=1;
+    if(degRadValueParam=="deg"){
+        fDtR=fromDegtoRad;
+    }
     setRootIndexValue(rootIndexValue.slice(0, -1));
     setOpenRootValue(openRootValue.slice(0, -1));
-    return calcExpParam + `**(1/${index}))`;
+    return calcExpParam + `)*${fDtR}).toFixed(12))`;
 }
-export function getRootIndex(calcExp) {
-    /*Chiamante: nthRootHandler Tasti_elenco.js
-    Funzione utilizzata in caso di radici n-esime per determinare l'indice di
-    radice. L'indice di radice corrisponde al numero o all'espressione tra
-    parentesi immediatemante precedente.
-    - Se precedute da ) si utilizza un contatore open incrementato quando si trova
-    ) e decrementato quando si trova ( similmente a come procediamo per l'indice
-    di radice. In questo caso però incrementiamo con ) e decrementiamo con (.
-    Quando open = 0 prendiamo l'indice di radice
-    Esempio: (1+(4/2))ˣ√4 l'indice è (1+(4/2))
-    - Se non precedute da ) prendiamo il numero immediatamente precedente, dunque
-    consideriamo i caratteri fino a che trovaimo un operatore
-    -In ogni caso se non troviamo punti di interruzione andiamo indietro fino
-    all'inizio
-    */
-    let rootIndex = "";
-    if (calcExp[calcExp.length - 1] == ")") {
-        let open = 1;
-        for (let i = calcExp.length - 1; i >= 0 && open != 0; i--) {
-            rootIndex = calcExp[i] + rootIndex;
-
-            switch (calcExp[i]) {
-                case ")":
-                    open++;
-                    break;
-                case "(":
-                    open--;
-            }
-        }
-    } else {
-        // eslint-disable-next-line no-useless-escape
-        const regExpr = /[-+*\/(**)]/;
-        const arrayExp = calcExp.split(regExpr);
-        rootIndex = arrayExp[arrayExp.length - 1];
-
-        /*Nel caso il numero sia preceduto da ( la togliamo
-        Esempio: (2ˣ√4)  i caratteri dell'indice di radice sono risultano essere
-        (2, con questa riga cancelliamo ( */
-        rootIndex = rootIndex.replaceAll("(", "");
-    }
-    return rootIndex;
-}
-

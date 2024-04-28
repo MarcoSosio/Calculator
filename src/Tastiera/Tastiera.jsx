@@ -17,7 +17,8 @@ export default function Tastiera() {
         openRootState,
         _delInputExpState_,
         indexElementState,
-        degRadState
+        degRadState,
+        funExpState
     } = $context;
 
     const [_delInputExpValue_, _setDelInputExpValue_] = _delInputExpState_;
@@ -32,7 +33,8 @@ export default function Tastiera() {
         openRootStateParam: openRootState,
         _delInputExpStateParam_: _delInputExpState_,
         indexElementStateParam: indexElementState,
-        degRadStateParam: degRadState
+        degRadStateParam: degRadState,
+        funExpStateParam: funExpState
     };
 
     useEffect(

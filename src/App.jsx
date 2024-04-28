@@ -32,7 +32,10 @@ export default function App() {
 
     /*indica se gli angoli vengono misurati in gradi sessagesimali (deg) o in 
     radianti (rad)*/
-    const [degRadValue, setDegRadValue] = useState("rad");
+    const [degRadValue, setDegRadValue] = useState("deg");
+
+    //espressione compresa in una funzione
+    const [funExpValue, setFunExpValue]=useState("");
     return (
         <div id="App">
             <div id="calcolatrice">
@@ -52,7 +55,8 @@ export default function App() {
                             indexElementValue,
                             setIndexElementValue
                         ],
-                        degRadState: [degRadValue, setDegRadValue]
+                        degRadState: [degRadValue, setDegRadValue],
+                        funExpState: [funExpValue, setFunExpValue]
                     }}
                 >
                     <Display></Display>

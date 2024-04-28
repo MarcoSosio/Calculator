@@ -2,6 +2,7 @@
 import { getRootIndex } from "./functions/rootFunctions";
 import { calculateRoot } from "./functions/rootFunctions";
 import { gestisciRadici } from "./functions/rootFunctions";
+import { calculateTrigonometric, gestisciTrigonometric } from "./functions/trigFunctions";
 /*
     ? "2nd","deg","?","??","???",
     ? "sin","cos","tan","log","ln",
@@ -22,19 +23,31 @@ function handlerEqual({
     calcExpStateParam,
     ansStateParam,
     rootIndexStateParam,
-    openRootStateParam
+    openRootStateParam,
+    degRadStateParam
 }) {
     const [resultValue, setResultValue] = resultStateParam;
     const [calcExpValue, setCalcExpValue] = calcExpStateParam;
     const [ansValue, setAnsValue] = ansStateParam;
     const [rootIndexValue, setRootIndexValue] = rootIndexStateParam;
+    const [degRadValue, setDegRadValue]=degRadStateParam;
     let risultato;
     let risposta = "";
     let exp = calcExpValue;
 
     //se non ho ancora calcolato radici le calcolo
-    if (rootIndexValue.length != 0) {
+    if (
+        rootIndexValue.length != 0 && 
+        !isNaN( Number(rootIndexValue[rootIndexValue.length-1]) )
+    ) {
         exp = calculateRoot(rootIndexStateParam, openRootStateParam, exp);
+        console.log(exp);
+    }
+    else if (
+        rootIndexValue.length != 0 && 
+        isNaN(Number(rootIndexValue[rootIndexValue.length - 1]))
+    ){
+        exp = calculateTrigonometric(rootIndexStateParam, openRootStateParam, degRadValue, exp);
         console.log(exp);
     }
 
@@ -218,17 +231,32 @@ function handlerDegRad({ degRadStateParam }) {
     }
 }
 
+function handlerTrigonometric({ inputExpStateParam, calcExpStateParam, rootIndexStateParam, openRootStateParam },
+    { inputElementParam, calcElementParam }){
+    const [inputExpValue, setInputExpValue] = inputExpStateParam;
+    const [calcExpValue, setCalcExpValue] = calcExpStateParam;
+    const [rootIndexValue, setRootIndexValue] = rootIndexStateParam;
+    const [openRootValue, setOpenRootValue] = openRootStateParam;
+    setInputExpValue(inputExpValue + inputElementParam);
+    setCalcExpValue(calcExpValue + calcElementParam);
+    setRootIndexValue([...rootIndexValue, "f"]);
+    setOpenRootValue([...openRootValue, 0]);
+}
+
 function $handlerGENERIC(
     {
         inputExpStateParam,
         calcExpStateParam,
         openRootStateParam,
-        rootIndexStateParam
+        rootIndexStateParam,
+        degRadStateParam,
+        funExpStateParam
     },
     { inputElementParam, calcElementParam }
 ) {
     const [inputExpValue, setInputExpValue] = inputExpStateParam;
     const [calcExpValue, setCalcExpValue] = calcExpStateParam;
+    const [degRadValue, setDegRadValue] = degRadStateParam;
 
     //! Come si può notare si imposta lo stato sul nuovo valore di calcExpValue
     //! solo dopo aver fatto i calcoli, dunque il valore appena inserito
@@ -237,6 +265,9 @@ function $handlerGENERIC(
     //prettier-ignore
     calcExp = gestisciRadici(
         openRootStateParam, rootIndexStateParam, calcElementParam, calcExp
+    );
+    calcExp = gestisciTrigonometric(
+        openRootStateParam, rootIndexStateParam, calcElementParam, funExpStateParam, degRadValue, calcExp
     );
     setInputExpValue(inputExpValue + inputElementParam);
     calcExp += calcElementParam;
@@ -262,11 +293,14 @@ export const tasti = [
     */
 
     //prettier-ignore
-    {tasto: piSymbol, inputElement: piSymbol, calcElement: String(Math.PI), funct: $handlerGENERIC },
+    { tasto: piSymbol, inputElement: piSymbol, calcElement: String(Math.PI), funct: $handlerGENERIC },
     { tasto: "D/R", inputElement: "", calcElement: "", funct: handlerDegRad },
-    {},
-    {},
-    {},
+    //prettier-ignore
+    { tasto: "sin", inputElement: "sin ", calcElement:"parseFloat(Math.sin((", funct:handlerTrigonometric},
+    //prettier-ignore
+    { tasto: "cos", inputElement: "cos ", calcElement:"parseFloat(Math.cos((", funct:handlerTrigonometric},
+    //prettier-ignore
+    { tasto: "tan", inputElement: "tan ", calcElement:"parseFloat(Math.tan((", funct:handlerTrigonometric},
 
     //prettier-ignore
     { tasto: rootSymbol, inputElement: rootSymbol, calcElement: "", funct: handlerSqrt }, //radice quadrata
