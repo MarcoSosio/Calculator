@@ -44,7 +44,6 @@ export function gestisciTrigonometric(
         
         if (operatori.includes(calcElementParam) &&
             openRootValue[openRootValue.length - 1] == 0) {
-            console.log("AA");
             calcExp = calculateTrigonometric(
                 rootIndexStateParam,
                 openRootStateParam,
@@ -54,7 +53,6 @@ export function gestisciTrigonometric(
             );
         } else if (calcElementParam == "(") {
             setOpenRootValue(newOpenRootValue(+1, 0, openRootValue));
-            setFunExpValue(funExpValue+calcElementParam);
         } else if (calcElementParam == ")") {
             let pos;
             if (openRootValue[openRootValue.length - 1] == 0) {
@@ -78,13 +76,9 @@ export function gestisciTrigonometric(
                 );
                 pos = 1;
             } else {
-                setFunExpValue(funExpValue+calcElementParam);
                 pos = 0;
             }
             setOpenRootValue(newOpenRootValue(-1, pos, openRootValue));
-        }
-        else{
-            setFunExpValue(funExpValue + calcElementParam);
         }
     }
     return calcExp;
@@ -101,17 +95,20 @@ export function calculateTrigonometric(
     const [openRootValue, setOpenRootValue] = openRootStateParam;
     const [funExpValue, setFunExpValue]= funExpStateParam;
     const fromDegtoRad = (2 * Math.PI)/360; //rapporto radianti/gradi
+    const fExp=calcExpParam.slice(funExpValue[funExpValue.length-1]+1);
+    console.log(fExp);
     let fDtR=1;
     if(degRadValueParam=="deg"){
         fDtR=fromDegtoRad;
     }
     setRootIndexValue(rootIndexValue.slice(0, -1));
     setOpenRootValue(openRootValue.slice(0, -1));
-    if(rootIndexValue=="f"){
+    if(rootIndexValue[rootIndexValue.length-1]=="f"){
         return calcExpParam + `)*${fDtR}).toFixed(9))`;
     }
-    else if(rootIndexValue=="t"){
-        return calcExpParam + `)*${fDtR}  ).toFixed(9)  )/parseFloat(  Math.cos(  (${funExpValue})*${fDtR}  ).toFixed(9)  )  )`;
+    else if (rootIndexValue[rootIndexValue.length - 1] =="t"){
+        setFunExpValue(funExpValue.slice(0, -1));
+        return calcExpParam + `)*${fDtR}  ).toFixed(9)  )/parseFloat(  Math.cos(  (${fExp})*${fDtR}  ).toFixed(9)  )  )`;
     }
 }
 //tan(tan(4))

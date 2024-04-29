@@ -35,7 +35,7 @@ export default function App() {
     const [degRadValue, setDegRadValue] = useState("deg");
 
     //espressione compresa in una funzione
-    const [funExpValue, setFunExpValue]=useState("");
+    const [funExpValue, setFunExpValue]=useState([]);
     return (
         <div id="App">
             <div id="calcolatrice">

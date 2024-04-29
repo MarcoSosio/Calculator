@@ -232,16 +232,19 @@ function handlerDegRad({ degRadStateParam }) {
     }
 }
 
-function handlerTrigonometric({ inputExpStateParam, calcExpStateParam, rootIndexStateParam, openRootStateParam },
+function handlerTrigonometric({ inputExpStateParam, calcExpStateParam, rootIndexStateParam, openRootStateParam, funExpStateParam },
     { inputElementParam, calcElementParam }){
     const [inputExpValue, setInputExpValue] = inputExpStateParam;
     const [calcExpValue, setCalcExpValue] = calcExpStateParam;
     const [rootIndexValue, setRootIndexValue] = rootIndexStateParam;
     const [openRootValue, setOpenRootValue] = openRootStateParam;
+    const [funExpValue, setFunExpValue] = funExpStateParam;
     setInputExpValue(inputExpValue + inputElementParam);
     setCalcExpValue(calcExpValue + calcElementParam);
+    let newCalcExpValue=calcExpValue+ calcElementParam;
     if(inputElementParam=="tan "){
         setRootIndexValue([...rootIndexValue, "t"]);
+        setFunExpValue([...funExpValue, newCalcExpValue.length-1]);
     }else{
         setRootIndexValue([...rootIndexValue, "f"]);
     }
@@ -297,9 +300,9 @@ export const tasti = [
     D/R --> gradi/radianti
     */
 
+    { tasto: "D/R", inputElement: "", calcElement: "", funct: handlerDegRad },
     //prettier-ignore
     { tasto: piSymbol, inputElement: piSymbol, calcElement: String(Math.PI), funct: $handlerGENERIC },
-    { tasto: "D/R", inputElement: "", calcElement: "", funct: handlerDegRad },
     //prettier-ignore
     { tasto: "sin", inputElement: "sin ", calcElement:"parseFloat(Math.sin((", funct:handlerTrigonometric},
     //prettier-ignore
