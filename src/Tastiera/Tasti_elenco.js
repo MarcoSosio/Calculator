@@ -2,7 +2,10 @@
 import { getRootIndex } from "./functions/rootFunctions";
 import { calculateRoot } from "./functions/rootFunctions";
 import { gestisciRadici } from "./functions/rootFunctions";
-import { calculateTrigonometric, gestisciTrigonometric } from "./functions/trigFunctions";
+import {
+    calculateTrigonometric,
+    gestisciTrigonometric
+} from "./functions/trigFunctions";
 /*
     ? "2nd","deg","?","??","???",
     ? "sin","cos","tan","log","ln",
@@ -16,7 +19,8 @@ import { calculateTrigonometric, gestisciTrigonometric } from "./functions/trigF
 const rootSymbol = String.fromCharCode(0x221a);
 const nthRootSymbol = String.fromCharCode(0x02e3) + rootSymbol;
 const piSymbol = String.fromCharCode(960);
-const divisionSymbol=String.fromCharCode(247);
+const divisionSymbol = String.fromCharCode(247);
+// isNaN( NUmber(n) ) serve per controllare se una stringa è numerica
 
 function handlerEqual({
     resultStateParam,
@@ -31,24 +35,29 @@ function handlerEqual({
     const [calcExpValue, setCalcExpValue] = calcExpStateParam;
     const [ansValue, setAnsValue] = ansStateParam;
     const [rootIndexValue, setRootIndexValue] = rootIndexStateParam;
-    const [degRadValue, setDegRadValue]=degRadStateParam;
+    const [degRadValue, setDegRadValue] = degRadStateParam;
     let risultato;
     let risposta = "";
     let exp = calcExpValue;
 
     //se non ho ancora calcolato radici le calcolo
     if (
-        rootIndexValue.length != 0 && 
-        !isNaN( Number(rootIndexValue[rootIndexValue.length-1]) )
+        rootIndexValue.length != 0 &&
+        !isNaN(Number(rootIndexValue[rootIndexValue.length - 1]))
     ) {
         exp = calculateRoot(rootIndexStateParam, openRootStateParam, exp);
         console.log(exp);
-    }
-    else if (
-        rootIndexValue.length != 0 && 
+    } else if (
+        rootIndexValue.length != 0 &&
         isNaN(Number(rootIndexValue[rootIndexValue.length - 1]))
-    ){
-        exp = calculateTrigonometric(rootIndexStateParam, openRootStateParam, degRadValue, funExpStateParam, exp);
+    ) {
+        exp = calculateTrigonometric(
+            rootIndexStateParam,
+            openRootStateParam,
+            degRadValue,
+            funExpStateParam,
+            exp
+        );
         console.log(exp);
     }
 
@@ -57,7 +66,8 @@ function handlerEqual({
         risposta = risultato;
         if (
             //prettier-ignore
-            (!isFinite(risultato) || isNaN(risultato)) && risultato != undefined) {
+            (!isFinite(risultato) || isNaN(risultato)) && risultato != undefined
+        ) {
             risultato = "Math Error";
             risposta = "";
         }
@@ -113,7 +123,7 @@ function handlerDel(params) {
         inputExpValueArray=["3", "+", "ˣ√", "4", "5", "Mod", "2"].
         Eliminerò l'ultimo elemento dell'array */
         let inputExpValueArray = [];
-        const regExpr = new RegExp(`${nthRootSymbol}|Ans|Mod|.`, "g");
+        const regExpr = new RegExp(`${nthRootSymbol}|Ans|Mod|sin |cos |tan |.`, "g");
         let x;
         do {
             x = regExpr.exec(inputExpValue);
@@ -126,6 +136,7 @@ function handlerDel(params) {
     }
 
     let newDelExpValue = splitInputExpValue(inputExpValue);
+    console.log(newDelExpValue);
     newDelExpValue = newDelExpValue.slice(0, -1);
     _setDelInputExpValue_(newDelExpValue);
 
@@ -145,7 +156,6 @@ function handlerAns({
     ansStateParam
 }) {
     const [inputExpValue, setInputExpValue] = inputExpStateParam;
-    const [resultValue, setResultValue] = resultStateParam;
     const [calcExpValue, setCalcExpValue] = calcExpStateParam;
     const [ansValue, setAnsValue] = ansStateParam;
     if (ansValue) {
@@ -232,22 +242,47 @@ function handlerDegRad({ degRadStateParam }) {
     }
 }
 
-function handlerTrigonometric({ inputExpStateParam, calcExpStateParam, rootIndexStateParam, openRootStateParam, funExpStateParam },
-    { inputElementParam, calcElementParam }){
+function handlerSinCos(
+    {
+        inputExpStateParam,
+        calcExpStateParam,
+        rootIndexStateParam,
+        openRootStateParam
+    },
+    { inputElementParam, calcElementParam }
+) {
+    const [inputExpValue, setInputExpValue] = inputExpStateParam;
+    const [calcExpValue, setCalcExpValue] = calcExpStateParam;
+    const [rootIndexValue, setRootIndexValue] = rootIndexStateParam;
+    const [openRootValue, setOpenRootValue] = openRootStateParam;
+
+    setInputExpValue(inputExpValue + inputElementParam);
+    setCalcExpValue(calcExpValue + calcElementParam);
+    setRootIndexValue([...rootIndexValue, "f"]);
+    setOpenRootValue([...openRootValue, 0]);
+}
+
+function handlerTan(
+    {
+        inputExpStateParam,
+        calcExpStateParam,
+        rootIndexStateParam,
+        openRootStateParam,
+        funExpStateParam
+    },
+    { inputElementParam, calcElementParam }
+){
     const [inputExpValue, setInputExpValue] = inputExpStateParam;
     const [calcExpValue, setCalcExpValue] = calcExpStateParam;
     const [rootIndexValue, setRootIndexValue] = rootIndexStateParam;
     const [openRootValue, setOpenRootValue] = openRootStateParam;
     const [funExpValue, setFunExpValue] = funExpStateParam;
+
+    let newCalcExpValue = calcExpValue + calcElementParam;
     setInputExpValue(inputExpValue + inputElementParam);
-    setCalcExpValue(calcExpValue + calcElementParam);
-    let newCalcExpValue=calcExpValue+ calcElementParam;
-    if(inputElementParam=="tan "){
-        setRootIndexValue([...rootIndexValue, "t"]);
-        setFunExpValue([...funExpValue, newCalcExpValue.length-1]);
-    }else{
-        setRootIndexValue([...rootIndexValue, "f"]);
-    }
+    setCalcExpValue(newCalcExpValue);
+    setRootIndexValue([...rootIndexValue, "t"]);
+    setFunExpValue([...funExpValue, newCalcExpValue.length - 1]);
     setOpenRootValue([...openRootValue, 0]);
 }
 
@@ -274,7 +309,12 @@ function $handlerGENERIC(
         openRootStateParam, rootIndexStateParam, calcElementParam, calcExp
     );
     calcExp = gestisciTrigonometric(
-        openRootStateParam, rootIndexStateParam, calcElementParam, funExpStateParam, degRadValue, calcExp
+        openRootStateParam,
+        rootIndexStateParam,
+        calcElementParam,
+        funExpStateParam,
+        degRadValue,
+        calcExp
     );
     setInputExpValue(inputExpValue + inputElementParam);
     calcExp += calcElementParam;
@@ -304,11 +344,11 @@ export const tasti = [
     //prettier-ignore
     { tasto: piSymbol, inputElement: piSymbol, calcElement: String(Math.PI), funct: $handlerGENERIC },
     //prettier-ignore
-    { tasto: "sin", inputElement: "sin ", calcElement:"parseFloat(Math.sin((", funct:handlerTrigonometric},
+    { tasto: "sin", inputElement: "sin ", calcElement:"parseFloat(Math.sin((", funct:handlerSinCos},
     //prettier-ignore
-    { tasto: "cos", inputElement: "cos ", calcElement:"parseFloat(Math.cos((", funct:handlerTrigonometric},
+    { tasto: "cos", inputElement: "cos ", calcElement:"parseFloat(Math.cos((", funct:handlerSinCos},
     //prettier-ignore
-    { tasto: "tan", inputElement: "tan ", calcElement:calcElementTan, funct:handlerTrigonometric},
+    { tasto: "tan", inputElement: "tan ", calcElement:calcElementTan, funct:handlerTan},
 
     //prettier-ignore
     { tasto: rootSymbol, inputElement: rootSymbol, calcElement: "", funct: handlerSqrt }, //radice quadrata
