@@ -4,7 +4,7 @@ body {
     margin: 0;
 }
 
-$std-proporzione: math.div(2vw , 1rem);
+$std-proporzione: math.div(2vw, 1rem);
 
 @function calc_dim($vw_rem, $scala) {
     $vw: $vw_rem * 1rem;

@@ -22,20 +22,17 @@ const piSymbol = String.fromCharCode(960);
 const divisionSymbol = String.fromCharCode(247);
 // isNaN( NUmber(n) ) serve per controllare se una stringa è numerica
 
-function handlerEqual({
-    resultStateParam,
-    calcExpStateParam,
-    ansStateParam,
-    rootIndexStateParam,
-    openRootStateParam,
-    degRadStateParam,
-    funExpStateParam
-}) {
+function handlerEqual(states) {
+    const {
+        resultStateParam,
+        calcExpStateParam,
+        ansStateParam,
+        rootIndexStateParam
+    } = states;
     const [resultValue, setResultValue] = resultStateParam;
     const [calcExpValue, setCalcExpValue] = calcExpStateParam;
     const [ansValue, setAnsValue] = ansStateParam;
     const [rootIndexValue, setRootIndexValue] = rootIndexStateParam;
-    const [degRadValue, setDegRadValue] = degRadStateParam;
     let risultato;
     let risposta = "";
     let exp = calcExpValue;
@@ -45,29 +42,21 @@ function handlerEqual({
         rootIndexValue.length != 0 &&
         !isNaN(Number(rootIndexValue[rootIndexValue.length - 1]))
     ) {
-        exp = calculateRoot(rootIndexStateParam, openRootStateParam, exp);
+        exp = calculateRoot(states, exp);
         console.log(exp);
     } else if (
         rootIndexValue.length != 0 &&
         isNaN(Number(rootIndexValue[rootIndexValue.length - 1]))
     ) {
-        exp = calculateTrigonometric(
-            rootIndexStateParam,
-            openRootStateParam,
-            degRadValue,
-            funExpStateParam,
-            exp
-        );
+        exp = calculateTrigonometric(states, exp);
         console.log(exp);
     }
 
     try {
         risultato = eval(exp);
         risposta = risultato;
-        if (
-            //prettier-ignore
-            (!isFinite(risultato) || isNaN(risultato)) && risultato != undefined
-        ) {
+        //prettier-ignore
+        if ((!isFinite(risultato) || isNaN(risultato)) && risultato != undefined) {
             risultato = "Math Error";
             risposta = "";
         }
@@ -89,24 +78,41 @@ function handlerEqual({
 function handlerAC({
     inputExpStateParam,
     calcExpStateParam,
-    resultStateParam
+    resultStateParam,
+    rootIndexStateParam,
+    openRootStateParam,
+    _delInputExpStateParam_,
+    funExpStateParam
 }) {
+    /*Tasto per eliminare tutti i calcoli
+    Resetta tutto a parte il valore della risposta predecente ansValue
+    Non resetto indexElementValue perché è uno stato che si resetta da solo*/
     const [inputExpValue, setInputExpValue] = inputExpStateParam;
     const [calcExpValue, setCalcExpValue] = calcExpStateParam;
     const [resultValue, setResultValue] = resultStateParam;
+    const [rootIndexValue, setRootIndexValue] = rootIndexStateParam;
+    const [openRootValue, setOpenRootValue] = openRootStateParam;
+    const [_delInputExpValue_, _setDelInputExpValue_] = _delInputExpStateParam_;
+    const [funExpValue, setFunExpValue] = funExpStateParam;
     setInputExpValue("");
     setCalcExpValue("");
     setResultValue("");
+    setRootIndexValue([]);
+    setOpenRootValue([]);
+    _setDelInputExpValue_([]);
+    setFunExpValue([]);
 }
 
 function handlerDel(params) {
+    //rimuovo l'ultimo elemento (numero, operatore, funzione, parentesi ...)
     const {
         inputExpStateParam,
         calcExpStateParam,
         rootIndexStateParam,
         openRootStateParam,
         _delInputExpStateParam_,
-        indexElementStateParam
+        indexElementStateParam,
+        funExpStateParam
     } = params;
 
     const [inputExpValue, setInputExpValue] = inputExpStateParam;
@@ -115,20 +121,26 @@ function handlerDel(params) {
     const [rootIndexValue, setRootIndexValue] = rootIndexStateParam;
     const [_delInputExpValue_, _setDelInputExpValue_] = _delInputExpStateParam_;
     const [indexElementValue, setIndexElementValue] = indexElementStateParam;
+    const [funExpValue, setFunExpValue] = funExpStateParam;
 
     function splitInputExpValue(inputExpValue) {
-        /* Spezzetta l'espressione in un array in cui ogni elemento corriponde al gruppo
-        di caratteri da eleminare
+        /* Spezzetta (Tokenizza) l'espressione in un array in cui ogni elemento 
+        corriponde al gruppo di caratteri da eleminare, dunque corrisponde a 
+        un inputElement di un tasto.
         Se ho per esempio 3+ˣ√4+5Mod2 
         inputExpValueArray=["3", "+", "ˣ√", "4", "5", "Mod", "2"].
         Eliminerò l'ultimo elemento dell'array */
         let inputExpValueArray = [];
-        const regExpr = new RegExp(`${nthRootSymbol}|Ans|Mod|sin |cos |tan |.`, "g");
+        const regExpr = new RegExp(
+            `${nthRootSymbol}|Ans|Mod|sin |cos |tan |.`,
+            "g"
+        );
         let x;
         do {
             x = regExpr.exec(inputExpValue);
             if (x != null) {
-                //exec restituisce un array con varie informazioni
+                /*exec restituisce un array con varie informazioni a me serve
+                l'informazione che mi esplicita la corrispondenza trovata*/
                 inputExpValueArray.push(x[0]);
             }
         } while (x != null);
@@ -136,25 +148,27 @@ function handlerDel(params) {
     }
 
     let newDelExpValue = splitInputExpValue(inputExpValue);
-    console.log(newDelExpValue);
-    newDelExpValue = newDelExpValue.slice(0, -1);
+    newDelExpValue = newDelExpValue.slice(0, -1); //elimino l'ultimo elemento
+
+    /*la modidica degli stati _delInputExpValue_ e indexElementValue scatenerà 
+    un effetto (vedi Tastiera.jsx)
+    Questa funzione rileggerà da capo la nuova inputExpValue e ne dedurrà la 
+    corripondente calcExpValue. Per questo è necessario che gli stati vengano azzerati
+    */
+
     _setDelInputExpValue_(newDelExpValue);
 
-    //reset all to recalculate
     setInputExpValue("");
     setCalcExpValue("");
     setOpenRootValue([]);
     setRootIndexValue([]);
+    setFunExpValue([]);
 
     setIndexElementValue(0); //set to 0 instead of null
 }
 
-function handlerAns({
-    inputExpStateParam,
-    calcExpStateParam,
-    resultStateParam,
-    ansStateParam
-}) {
+function handlerAns({ inputExpStateParam, calcExpStateParam, ansStateParam }) {
+    //ottieni l'ultimo risultato
     const [inputExpValue, setInputExpValue] = inputExpStateParam;
     const [calcExpValue, setCalcExpValue] = calcExpStateParam;
     const [ansValue, setAnsValue] = ansStateParam;
@@ -166,45 +180,27 @@ function handlerAns({
     }
 }
 
-function handlerSqrt(
-    {
-        inputExpStateParam,
-        rootIndexStateParam,
-        openRootStateParam,
-        calcExpStateParam
-    },
-    { inputElementParam }
-) {
-    const [inputExpValue, setInputExpValue] = inputExpStateParam;
-    const [rootIndexValue, setRootIndexValue] = rootIndexStateParam;
-    const [openRootValue, setOpenRootValue] = openRootStateParam;
-    const [calcExpValue, setCalcExpValue] = calcExpStateParam;
+function handlerNthRoot(states, { inputElementParam }) {
+    /*
+    Per calcolare le radici eseguiamo **(1/i) sul radicando (dove i è l'indice
+    di radice) ma non immediatamente ma solo dopo che è stato determinato tutto il radicando.
+    Utilizziamo rootIndexValue per capire se ci sono calcoli di radici da eseguire in sospeso .
+    Nell'attesa di eseguire questo calcolo utilizziamo degli stati
+    (openRootValue, rootIndexValue) per memorizzare delle informazioni necessarie
+    a capire quando eseguire il calcolo (openRootValue) e qual'è l'indice di radice
+    (rootIndexValue).
+    Utilizziamo degli stati in forma di array per fare in modo che possano essere
+    memorizzati dati relativi a diversi calcoli di radici in sospeso, aspetto che 
+    può essere utile nel caso di radici innestate
 
-    let calcExp = calcExpValue;
-
-    /* if (openRootValue[openRootValue.length - 1] == 0) {
-        calcExp = calculateRoot(
-            rootIndexStateParam,
-            openRootStateParam,
-            calcExpValue
-        );
-    } */ //? Necessità dubbia
-    calcExp += "(";
-    setCalcExpValue(calcExp);
-    setOpenRootValue([...openRootValue, 0]);
-    setInputExpValue(inputExpValue + inputElementParam);
-    setRootIndexValue([...rootIndexValue, 2]);
-}
-
-function handlerNthRoot(
-    {
+    > vedi per dettagli rootFunctions.js --> gestisciRadici
+    */
+    const {
         inputExpStateParam,
         calcExpStateParam,
         rootIndexStateParam,
         openRootStateParam
-    },
-    { inputElementParam }
-) {
+    } = states;
     const [inputExpValue, setInputExpValue] = inputExpStateParam;
     const [calcExpValue, setCalcExpValue] = calcExpStateParam;
     const [rootIndexValue, setRootIndexValue] = rootIndexStateParam;
@@ -215,25 +211,57 @@ function handlerNthRoot(
     fosse un altro operatore come + o un -, questo per gestire situazioni del tipo
     3ˣ√8ˣ√4 dove ci si aspetta (3ˣ√8)ˣ√4 = 2ˣ√4 = 2 */
     if (openRootValue[openRootValue.length - 1] == 0) {
-        calcExp = calculateRoot(
-            rootIndexStateParam,
-            openRootStateParam,
-            calcExpValue
-        );
+        calcExp = calculateRoot(states, calcExpValue);
     }
+
+
     const rootIndex = getRootIndex(calcExp);
-    setOpenRootValue([...openRootValue, 0]);
+    /*Tolgo l'indice di radice togliendo tanti caratteri quanta la lunghezza dell'indice
+    L'indice di radici infatti deve essere acquisito ora ma (perché si scrive davanti
+    alla radice) ma deve essere inserito solo al momento del calcolo nell' operazione **(1/i) */
     calcExp = calcExp.slice(0, -rootIndex.length);
+    /*apriamo una parentesi che chiuderemo al momento del calcolo per tenere assieme
+    tutto il radicando*/
     calcExp += "(";
     setInputExpValue(inputExpValue + inputElementParam);
-    /*Divido l'espressione a ogni operatore per determinare quale numero è l'indice di radice */
-
-    setRootIndexValue([...rootIndexValue, rootIndex]); //prendo l'indice di radice (ultimo numero)
-    /*Tolgo l'indice di radice togliendo tanti caratteri quanta la lunghezza dell'indice*/
     setCalcExpValue(calcExp);
+
+    setRootIndexValue([...rootIndexValue, rootIndex]);
+    setOpenRootValue([...openRootValue, 0]);
+}
+
+function handlerSqrt(states, { inputElementParam }) {
+
+    const {
+        inputExpStateParam,
+        rootIndexStateParam,
+        openRootStateParam,
+        calcExpStateParam
+    } = states;
+    const [inputExpValue, setInputExpValue] = inputExpStateParam;
+    const [rootIndexValue, setRootIndexValue] = rootIndexStateParam;
+    const [openRootValue, setOpenRootValue] = openRootStateParam;
+    const [calcExpValue, setCalcExpValue] = calcExpStateParam;
+
+    let calcExp = calcExpValue;
+
+    /* if (openRootValue[openRootValue.length - 1] == 0) {
+        calcExp = calculateRoot(
+            states,
+            calcExpValue
+        );
+    } */ //? Necessità dubbia
+
+    calcExp += "(";
+    setCalcExpValue(calcExp);
+    setInputExpValue(inputExpValue + inputElementParam);
+
+    setOpenRootValue([...openRootValue, 0]);
+    setRootIndexValue([...rootIndexValue, 2]);
 }
 
 function handlerDegRad({ degRadStateParam }) {
+    //imposta gradi-radianti
     const [degRadValue, setDegRadValue] = degRadStateParam;
     if (degRadValue == "rad") {
         setDegRadValue("deg");
@@ -256,6 +284,13 @@ function handlerSinCos(
     const [rootIndexValue, setRootIndexValue] = rootIndexStateParam;
     const [openRootValue, setOpenRootValue] = openRootStateParam;
 
+    /*Con le funzioni trigonometriche inserisco nella calcExpValue una funzione 
+    aperta (vedi sotto la calcExp corrispondente) che verrà chiusa una volta determinata
+    l'espressione argomento della funzione. Questo processo che determina quando 
+    chiudere la funzione è analogo a quello usato nelle radici 
+    Utilizzo openRootValue con valore speciale "f" per sapere che ho una funzione
+    da chiudere ma ovviamente in questo caso non ho un indice di radice e non devo 
+    calcolare una radice*/
     setInputExpValue(inputExpValue + inputElementParam);
     setCalcExpValue(calcExpValue + calcElementParam);
     setRootIndexValue([...rootIndexValue, "f"]);
@@ -271,13 +306,22 @@ function handlerTan(
         funExpStateParam
     },
     { inputElementParam, calcElementParam }
-){
+) {
     const [inputExpValue, setInputExpValue] = inputExpStateParam;
     const [calcExpValue, setCalcExpValue] = calcExpStateParam;
     const [rootIndexValue, setRootIndexValue] = rootIndexStateParam;
     const [openRootValue, setOpenRootValue] = openRootStateParam;
     const [funExpValue, setFunExpValue] = funExpStateParam;
 
+    /*Nel caso della tangente faccio tutto ciò che ho fatto prima ma utilizzo uno
+    stato funExpValue che memorizza l'indice del carattere dopo di cui inizia l'espressione 
+    argomento della tangente (per risalire facilmente all'argomento della tangente).
+    Utilizzo un array sempre per il fatto che posso avere più funzioni aperte 
+    contemporaneamente similmente alle radici
+    Devo fare questo perché per calcolare la tangente non utilizzo semplicemente 
+    Math.tan() divido il seno per il coseno. Questo perché Math.tan(90°) restituisce
+    un numero mentre in realtà è un operazione impossibile
+    Imposto rootIndexValue su t per ricordare che ho in sospeso il calcolo di una tangente*/
     let newCalcExpValue = calcExpValue + calcElementParam;
     setInputExpValue(inputExpValue + inputElementParam);
     setCalcExpValue(newCalcExpValue);
@@ -286,41 +330,27 @@ function handlerTan(
     setOpenRootValue([...openRootValue, 0]);
 }
 
-function $handlerGENERIC(
-    {
+function $handlerGENERIC(states, { inputElementParam, calcElementParam }) {
+    const {
         inputExpStateParam,
-        calcExpStateParam,
-        openRootStateParam,
-        rootIndexStateParam,
-        degRadStateParam,
-        funExpStateParam
-    },
-    { inputElementParam, calcElementParam }
-) {
+        calcExpStateParam
+    } = states;
     const [inputExpValue, setInputExpValue] = inputExpStateParam;
     const [calcExpValue, setCalcExpValue] = calcExpStateParam;
-    const [degRadValue, setDegRadValue] = degRadStateParam;
     //! Come si può notare si imposta lo stato sul nuovo valore di calcExpValue
     //! solo dopo aver fatto i calcoli, dunque il valore appena inserito
     //! (calcElementProp) non sarà parte dell'espressione al momento dei calcoli
     let calcExp = calcExpValue;
+    //eseguo le funzioni che consentono di gestire e calcolare radici e funzioni
     //prettier-ignore
-    calcExp = gestisciRadici(
-        openRootStateParam, rootIndexStateParam, calcElementParam, calcExp
-    );
-    calcExp = gestisciTrigonometric(
-        openRootStateParam,
-        rootIndexStateParam,
-        calcElementParam,
-        funExpStateParam,
-        degRadValue,
-        calcExp
-    );
+    calcExp = gestisciRadici(states, calcElementParam, calcExp);
+    calcExp = gestisciTrigonometric(states, calcElementParam, calcExp);
     setInputExpValue(inputExpValue + inputElementParam);
     calcExp += calcElementParam;
     setCalcExpValue(calcExp);
 }
 const calcElementTan = "parseFloat(  parseFloat(  Math.sin(  (";
+// complementare di chiusura
 // ")*${fDtR}  ).toFixed(9)  )/parseFloat(  Math.cos(  (${funExpValue})*${fDtR}  ).toFixed(9)  )  )"
 export const tasti = [
     /*
@@ -344,11 +374,11 @@ export const tasti = [
     //prettier-ignore
     { tasto: piSymbol, inputElement: piSymbol, calcElement: String(Math.PI), funct: $handlerGENERIC },
     //prettier-ignore
-    { tasto: "sin", inputElement: "sin ", calcElement:"parseFloat(Math.sin((", funct:handlerSinCos},
+    { tasto: "sin", inputElement: "sin ", calcElement: "parseFloat(Math.sin((", funct: handlerSinCos },
     //prettier-ignore
-    { tasto: "cos", inputElement: "cos ", calcElement:"parseFloat(Math.cos((", funct:handlerSinCos},
+    { tasto: "cos", inputElement: "cos ", calcElement: "parseFloat(Math.cos((", funct: handlerSinCos },
     //prettier-ignore
-    { tasto: "tan", inputElement: "tan ", calcElement:calcElementTan, funct:handlerTan},
+    { tasto: "tan", inputElement: "tan ", calcElement: calcElementTan, funct: handlerTan },
 
     //prettier-ignore
     { tasto: rootSymbol, inputElement: rootSymbol, calcElement: "", funct: handlerSqrt }, //radice quadrata
@@ -374,7 +404,7 @@ export const tasti = [
     { tasto: "6", inputElement: "6", calcElement: "6", funct: $handlerGENERIC },
     { tasto: "x", inputElement: "x", calcElement: "*", funct: $handlerGENERIC },
     //prettier-ignore
-    { tasto: "/", inputElement: divisionSymbol, calcElement: "/", funct: $handlerGENERIC},
+    { tasto: "/", inputElement: divisionSymbol, calcElement: "/", funct: $handlerGENERIC },
 
     //riga---
 

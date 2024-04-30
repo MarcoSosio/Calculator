@@ -7,7 +7,7 @@ import Context from "../Context.jsx";
 import { gestisci_del } from "./functions/delFunctions.js";
 
 export default function Tastiera() {
-    const $context=useContext(Context);
+    const $context = useContext(Context);
     const {
         inputExpState,
         calcExpState,

@@ -16,7 +16,7 @@ export default function App() {
     //valore ottenuto dal tasto Ans (risultato ottenuto precedentemente)
     const [ansValue, setAnsValue] = useState();
 
-    //indice radici da inserire 
+    //indice radici da inserire
     const [rootIndexValue, setRootIndexValue] = useState([]);
 
     /*segnala il numero di parentesi non chiuse quando si ha una parentesi relativa a una 
@@ -26,7 +26,6 @@ export default function App() {
   Quando una radice viene risolta l'array viene tagliato
   */
 
-
     const [_delInputExpValue_, _setDelInputExpValue_] = useState([]);
     const [indexElementValue, setIndexElementValue] = useState(null);
 
@@ -34,8 +33,9 @@ export default function App() {
     radianti (rad)*/
     const [degRadValue, setDegRadValue] = useState("deg");
 
-    //espressione compresa in una funzione
-    const [funExpValue, setFunExpValue]=useState([]);
+    //indice precedente all'izizio del conetnuto di una funzione
+    //usato per memorizzare gli argomenti della tangente
+    const [funExpValue, setFunExpValue] = useState([]);
     return (
         <div id="App">
             <div id="calcolatrice">

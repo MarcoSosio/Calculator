@@ -1,10 +1,5 @@
 /* eslint-disable no-unused-vars */
-export function gestisciRadici(
-    openRootStateParam,
-    rootIndexStateParam,
-    calcElementPropParam,
-    calcExpParam
-) {
+export function gestisciRadici(states, calcElementParam, calcExpParam) {
     /* Questa funzione permette di gestire e calcolare correttamente le radici.
     Quando inseriamo una radice non abbiamo un operatore che gestisca
     automaticamente il tutto come + - * / ** % ma dobbiamo determinare un
@@ -21,7 +16,10 @@ export function gestisciRadici(
     quando trova ( e lo decrementeremo quando trova ). Quando tornerà a 0 significa che
     tutte le parentesi sono state chiuse e potremo inserire **(1/i)
     Esempio: √(1+(4/2)) = (1+(4/2))**(1/2)
+
+    L'indice di radice è determinato da rootIndexValue
     */
+    const { openRootStateParam, rootIndexStateParam } = states;
     const [openRootValue, setOpenRootValue] = openRootStateParam;
     const [rootIndexValue, setRootIndexValue] = rootIndexStateParam;
     let calcExp = calcExpParam;
@@ -36,18 +34,19 @@ export function gestisciRadici(
         return newValue;
     }
 
-    if ( rootIndexValue.length != 0 && !isNaN( Number(rootIndexValue[rootIndexValue.length-1]) ) ) {
+    if (
+        rootIndexValue.length != 0 &&
+        !isNaN(Number(rootIndexValue[rootIndexValue.length - 1]))
+    ) {
         const operatori = ["+", "-", "*", "/", "**", "%"];
-        if (operatori.includes(calcElementPropParam) &&
-            openRootValue[openRootValue.length - 1] == 0) {
-            calcExp = calculateRoot(
-                rootIndexStateParam,
-                openRootStateParam,
-                calcExp
-            );
-        } else if (calcElementPropParam == "(") {
+        if (
+            operatori.includes(calcElementParam) &&
+            openRootValue[openRootValue.length - 1] == 0
+        ) {
+            calcExp = calculateRoot(states, calcExp);
+        } else if (calcElementParam == "(") {
             setOpenRootValue(newOpenRootValue(+1, 0, openRootValue));
-        } else if (calcElementPropParam == ")") {
+        } else if (calcElementParam == ")") {
             let pos;
             if (openRootValue[openRootValue.length - 1] == 0) {
                 /*
@@ -61,11 +60,7 @@ export function gestisciRadici(
                 relativa alla prima radice e non all'ultima, quindi avremo che
                 openRootValue = [0,0] piuttosto che [1,-1]
                 */
-                calcExp = calculateRoot(
-                    rootIndexStateParam,
-                    openRootStateParam,
-                    calcExp
-                );
+                calcExp = calculateRoot(states, calcExp);
                 pos = 1;
             } else {
                 pos = 0;
@@ -76,8 +71,7 @@ export function gestisciRadici(
     return calcExp;
 }
 export function calculateRoot(
-    rootIndexStateParam,
-    openRootStateParam,
+    { rootIndexStateParam, openRootStateParam },
     calcExpParam
 ) {
     /*La funzione inserisce **(1/i) in modo da calcolare la radice*/
@@ -130,4 +124,3 @@ export function getRootIndex(calcExp) {
     }
     return rootIndex;
 }
-
