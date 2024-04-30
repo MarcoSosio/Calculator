@@ -3,7 +3,7 @@ export function gestisciTrigonometric(states, calcElementParam, calcExpParam) {
     // I RAGIONAMENTI SONO ANALOGHI A QUELLI VISTI CON LE RADICI, MA IN QUESTI CASO
     // SEMPLICEMENTE CHIAMO UNA DIVERSA FUNZIONE DI CALCOLO
     //prettier-ignore
-    const { openRootStateParam, rootIndexStateParam, degRadStateParam } = states;
+    const { openRootStateParam, rootIndexStateParam } = states;
 
     const [openRootValue, setOpenRootValue] = openRootStateParam;
     const [rootIndexValue, setRootIndexValue] = rootIndexStateParam;
@@ -61,6 +61,8 @@ export function calculateTrigonometric(
     if (degRadValue == "deg") {
         fDtR = fromDegtoRad;
     }
+
+    /*Una volta che la funzione è chiusa elimino i dati relativi a tale funzione */
     setRootIndexValue(rootIndexValue.slice(0, -1));
     setOpenRootValue(openRootValue.slice(0, -1));
     if (rootIndexValue[rootIndexValue.length - 1] == "f") {

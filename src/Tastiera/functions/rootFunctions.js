@@ -78,8 +78,11 @@ export function calculateRoot(
     const [rootIndexValue, setRootIndexValue] = rootIndexStateParam;
     const [openRootValue, setOpenRootValue] = openRootStateParam;
     const index = rootIndexValue[rootIndexValue.length - 1];
+
+    /* Una volta che la radice è risolta elimino i dati relativi a tale calcolo*/
     setRootIndexValue(rootIndexValue.slice(0, -1));
     setOpenRootValue(openRootValue.slice(0, -1));
+    
     return calcExpParam + `**(1/${index}))`;
 }
 export function getRootIndex(calcExp) {
